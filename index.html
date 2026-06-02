@@ -6,6 +6,7 @@
 <title>FacturaPro</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;font-size:14px;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
@@ -519,45 +520,78 @@ function limpiarDatos(tipo){
   }
 }
 
-// ── AUTH ──────────────────────────────────────────────
-function getCredentials(){return JSON.parse(localStorage.getItem('fp_credentials')||'{"user":"admin","pass":"factura2024"}');}
-function doLogin(){
+// ── SUPABASE ──────────────────────────────────────────
+const SURL='https://rddqovxastacbvhhwggv.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkZHFvdnhhc3RhY2J2aGh3Z2d2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNjQwNTgsImV4cCI6MjA5NTY0MDA1OH0.eA8WpfrGn3en4NZ-IG3j8XSynvujrExD6Bv1Lmp1fCs';
+const sb=supabase.createClient(SURL,SKEY);
+let currentUserId=null;
+let saveTimer=null;
+
+async function doLogin(){
   const u=document.getElementById('login-user').value.trim();
   const p=document.getElementById('login-pass').value;
-  const c=getCredentials();
   const err=document.getElementById('login-error');
-  if(u===c.user&&p===c.pass){
-    err.style.display='none';
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('app-screen').style.display='block';
-    document.getElementById('nav-username').textContent='👤 '+u;
-    renderInvoices();
-  } else {err.style.display='block';document.getElementById('login-pass').value='';}
+  const btn=document.querySelector('.login-btn');
+  if(!u||!p){err.style.display='block';err.textContent='Ingresa usuario y contraseña';return;}
+  btn.textContent='Verificando...';btn.disabled=true;
+  try{
+    const{data,error}=await sb.from('fp_users').select('*').eq('username',u).eq('password',p).single();
+    if(error||!data){err.style.display='block';err.textContent='Usuario o contraseña incorrectos.';document.getElementById('login-pass').value='';}
+    else if(data.blocked){err.style.display='block';err.textContent='Tu acceso ha sido bloqueado.';}
+    else{
+      currentUserId=data.id;
+      err.style.display='none';
+      await loadFromSupabase();
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('app-screen').style.display='block';
+      document.getElementById('nav-username').textContent='👤 '+(data.full_name||data.username);
+      renderInvoices();
+    }
+  }catch(e){err.style.display='block';err.textContent='Error de conexión. Verifica tu internet.';}
+  btn.textContent='Ingresar';btn.disabled=false;
 }
+
+async function loadFromSupabase(){
+  try{
+    const{data,error}=await sb.from('fp_data').select('data').eq('user_id',currentUserId).single();
+    if(!error&&data&&data.data){
+      const d=data.data;
+      if(d.invoices) invoices=d.invoices;
+      if(d.clients) clients=d.clients;
+      if(d.products) products=d.products;
+      if(d.company) company=d.company;
+      if(d.issuers) issuers=d.issuers;
+    }
+  }catch(e){console.log('Error cargando datos:',e);}
+}
+
+async function saveToSupabase(){
+  if(!currentUserId) return;
+  const payload={invoices,clients,products,company,issuers};
+  try{
+    await sb.from('fp_data').upsert({user_id:currentUserId,data:payload,updated_at:new Date().toISOString()});
+  }catch(e){console.log('Error guardando:',e);}
+}
+
+function save(){
+  // Guardar localmente como respaldo
+  localStorage.setItem('fp_invoices',JSON.stringify(invoices));
+  localStorage.setItem('fp_clients',JSON.stringify(clients));
+  localStorage.setItem('fp_products',JSON.stringify(products));
+  localStorage.setItem('fp_company',JSON.stringify(company));
+  localStorage.setItem('fp_issuers',JSON.stringify(issuers));
+  // Guardar en Supabase con debounce
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveToSupabase,800);
+}
+
 function doLogout(){
+  currentUserId=null;
   document.getElementById('app-screen').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('login-user').value='';
   document.getElementById('login-pass').value='';
   document.getElementById('login-error').style.display='none';
-}
-function openChangePwd(){
-  ['pwd-current','pwd-new','pwd-confirm'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('pwd-error').style.display='none';
-  document.getElementById('pwd-modal').classList.add('open');
-}
-function savePassword(){
-  const cur=document.getElementById('pwd-current').value;
-  const nw=document.getElementById('pwd-new').value;
-  const cf=document.getElementById('pwd-confirm').value;
-  const err=document.getElementById('pwd-error');
-  const c=getCredentials();
-  if(cur!==c.pass){err.textContent='Contraseña actual incorrecta.';err.style.display='block';return;}
-  if(nw.length<6){err.textContent='Mínimo 6 caracteres.';err.style.display='block';return;}
-  if(nw!==cf){err.textContent='Las contraseñas no coinciden.';err.style.display='block';return;}
-  localStorage.setItem('fp_credentials',JSON.stringify({user:c.user,pass:nw}));
-  document.getElementById('pwd-modal').classList.remove('open');
-  alert('✅ Contraseña actualizada.');
 }
 
 // ── DATA ──────────────────────────────────────────────
