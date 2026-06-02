@@ -1054,7 +1054,7 @@ function renderCartera(){
           <div style="background:#e5e3dc;border-radius:20px;height:5px;margin-top:3px;overflow:hidden"><div style="height:100%;background:var(--green);width:${pct}%"></div></div>`:''}
         </td>
         <td><div class="flex" style="gap:4px;flex-wrap:wrap">
-          <button class="btn btn-sm" style="color:var(--blue);border-color:var(--blue)" onclick="openAbonoModal('${inv.id}')">💰 Abonar</button>
+          <button class="btn btn-sm" style="color:var(--blue);border-color:var(--blue)" onclick="event.stopPropagation();openAbonoModal('${inv.id}')">💰 Abonar</button>
           <button class="btn btn-sm btn-success" onclick="marcarPagada('${inv.id}')">✓ Pagar</button>
           <button class="btn btn-sm" onclick="previewById('${inv.id}')">👁</button>
         </div></td></tr>`;
