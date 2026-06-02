@@ -522,7 +522,8 @@ function limpiarDatos(tipo){
 }
 
 const SURL='https://rddqovxastacbvhhwggv.supabase.co';
-const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkZHFvdnhhc3RhY2J2aGh3Z2d2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDA2NDA1OCwiZXhwIjoyMDk1NjQwMDU4fQ.azI-7IKLsoNzx82W9tW5AhFhmEIxblOyRA6dU0-SGxo';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkZHFvdnhhc3RhY2J2aGh3Z2d2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNjQwNTgsImV4cCI6MjA5NTY0MDA1OH0.eA8WpfrGn3en4NZ-IG3j8XSynvujrExD6Bv1Lmp1fCs';
+const sb=supabase.createClient(SURL,SKEY,{auth:{persistSession:false},global:{headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY}}});
 const sb=supabase.createClient(SURL,SKEY);
 let currentUserId=null;
 let currentUserData=null;
