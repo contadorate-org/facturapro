@@ -536,11 +536,21 @@ async function doLogin(){
   const btn=document.querySelector('.login-btn');
   if(!u||!p){err.style.display='block';err.textContent='Ingresa usuario y contraseña';return;}
   btn.textContent='Verificando...';btn.disabled=true;
+  err.style.display='none';
   try{
-    const{data,error}=await sb.from('fp_users').select('*').eq('username',u).eq('password',p).single();
-    if(error||!data){
+    // Buscar por usuario solamente primero
+    const{data,error}=await sb.from('fp_users').select('*').eq('username',u).maybeSingle();
+    console.log('Login response:',data,error);
+    if(error){
       err.style.display='block';
-      err.textContent='Usuario o contraseña incorrectos.';
+      err.textContent='Error de conexión: '+error.message;
+    } else if(!data){
+      err.style.display='block';
+      err.textContent='Usuario no encontrado.';
+      document.getElementById('login-pass').value='';
+    } else if(data.password!==p){
+      err.style.display='block';
+      err.textContent='Contraseña incorrecta.';
       document.getElementById('login-pass').value='';
     } else if(data.blocked){
       err.style.display='block';
@@ -548,16 +558,16 @@ async function doLogin(){
     } else {
       currentUserId=data.id;
       currentUserData=data;
-      err.style.display='none';
       await loadFromSupabase();
       document.getElementById('login-screen').style.display='none';
       document.getElementById('app-screen').style.display='block';
       document.getElementById('nav-username').textContent='👤 '+(data.full_name||data.username);
       renderInvoices();
     }
-  } catch(e){
+  }catch(e){
     err.style.display='block';
-    err.textContent='Error de conexión: '+e.message;
+    err.textContent='Error: '+e.message;
+    console.log('Login error:',e);
   }
   btn.textContent='Ingresar';btn.disabled=false;
 }
