@@ -944,7 +944,10 @@ function totalAbonado(inv){return(inv.abonos||[]).reduce((s,a)=>s+a.monto,0);}
 function saldoPendiente(inv){return inv.total-totalAbonado(inv);}
 
 function openAbonoModal(id){
-  const inv=invoices.find(x=>x.id===id);if(!inv)return;
+  const inv=invoices.find(x=>x.id===id);
+  if(!inv){alert('Factura no encontrada.');return;}
+  const modal=document.getElementById('abono-modal');
+  if(!modal){alert('Error: modal no encontrado.');return;}
   currentAbonoInvId=id;
   const abonado=totalAbonado(inv);
   const saldo=saldoPendiente(inv);
