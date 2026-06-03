@@ -510,7 +510,24 @@ function importarDatos(e){
 function limpiarDatos(tipo){
   if(tipo==='facturas'){
     if(!confirm('¿Eliminar TODAS las facturas? Esta acción no se puede deshacer.'))return;
-    invoices=[];localStorage.setItem('fp_invoices','[]');renderInvoices();alert('Facturas eliminadas.');
+    invoices=[];localStorage.setItem('fp_invoices','[]');renderInvoices();
+  ['pwd-current','pwd-new','pwd-confirm'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pwd-error').style.display='none';
+  document.getElementById('pwd-modal').classList.add('open');
+}
+async function savePassword(){
+  const cur=document.getElementById('pwd-current').value;
+  const nw=document.getElementById('pwd-new').value;
+  const cf=document.getElementById('pwd-confirm').value;
+  const err=document.getElementById('pwd-error');
+  if(nw.length<6){err.textContent='Mínimo 6 caracteres.';err.style.display='block';return;}
+  if(nw!==cf){err.textContent='Las contraseñas no coinciden.';err.style.display='block';return;}
+  const{data}=await sb.from('fp_users').select('password').eq('id',currentUserId).single();
+  if(!data||data.password!==cur){err.textContent='Contraseña actual incorrecta.';err.style.display='block';return;}
+  await sb.from('fp_users').update({password:nw}).eq('id',currentUserId);
+  document.getElementById('pwd-modal').classList.remove('open');
+  alert('✅ Contraseña actualizada.');
+}alert('Facturas eliminadas.');
   } else {
     if(!confirm('¿Eliminar TODOS los datos? Esta acción no se puede deshacer.'))return;
     ['fp_invoices','fp_clients','fp_products','fp_company','fp_issuers'].forEach(k=>localStorage.removeItem(k));
