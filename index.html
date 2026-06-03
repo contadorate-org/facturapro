@@ -561,10 +561,16 @@ tr:hover td{background:#fafaf8}
   <div class="modal" style="max-width:720px;width:95%">
     <div class="flex flex-between" style="margin-bottom:14px"><h3>Vista Previa</h3><button class="btn btn-sm" onclick="document.getElementById('preview-modal').classList.remove('open')">✕</button></div>
     <div id="inv-preview"></div>
-    <div class="flex flex-end" style="margin-top:16px;gap:8px">
+    <div style="margin-top:14px;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:12px;font-weight:600;color:#166534">📲 WhatsApp:</span>
+      <input id="wa-phone" type="tel" placeholder="57 300 123 4567" style="flex:1;min-width:160px;max-width:220px;padding:6px 10px;border:1px solid #86efac;border-radius:6px;font-size:13px;background:#fff;outline:none"/>
+      <span style="font-size:11px;color:#4ade80;white-space:nowrap">↑ Número del destinatario</span>
+    </div>
+    <div class="flex flex-end" style="margin-top:12px;gap:8px;flex-wrap:wrap">
       <button class="btn" onclick="document.getElementById('preview-modal').classList.remove('open')">Cerrar</button>
       <button class="btn btn-success" id="pdf-btn" onclick="downloadPDF()">⬇ PDF</button>
       <button class="btn btn-primary" onclick="sendEmail()">✉ Email</button>
+      <button class="btn" id="wa-btn" onclick="sendWhatsApp()" style="background:#25d366;color:#fff;border-color:#25d366;font-weight:600">📲 WhatsApp</button>
     </div>
   </div>
 </div>
@@ -978,8 +984,55 @@ function buildPreviewHTML(inv){
   ${(co.footer||company.footer)?`<div style="text-align:center;font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:10px">${co.footer||company.footer}</div>`:''}
 </div>`;
 }
-function previewInvoice(){currentPreviewInv=getInvoiceData();document.getElementById('inv-preview').innerHTML=buildPreviewHTML(currentPreviewInv);document.getElementById('preview-modal').classList.add('open');}
-function previewById(id){currentPreviewInv=invoices.find(x=>x.id===id);if(!currentPreviewInv)return;document.getElementById('inv-preview').innerHTML=buildPreviewHTML(currentPreviewInv);document.getElementById('preview-modal').classList.add('open');}
+function _openPreviewModal(inv){
+  document.getElementById('inv-preview').innerHTML=buildPreviewHTML(inv);
+  const phone=(inv.client.phone||'').replace(/\s+/g,'');
+  document.getElementById('wa-phone').value=phone||'';
+  document.getElementById('preview-modal').classList.add('open');
+}
+function previewInvoice(){currentPreviewInv=getInvoiceData();_openPreviewModal(currentPreviewInv);}
+function previewById(id){currentPreviewInv=invoices.find(x=>x.id===id);if(!currentPreviewInv)return;_openPreviewModal(currentPreviewInv);}
+
+function sendWhatsApp(){
+  const inv=currentPreviewInv;if(!inv)return;
+  let phone=document.getElementById('wa-phone').value.replace(/[\s\-\(\)]/g,'');
+  if(!phone){alert('Ingresa el numero de WhatsApp del destinatario.');return;}
+  if(/^3\d{9}$/.test(phone))phone='57'+phone;
+  const el=document.getElementById('inv-preview');
+  const waBtn=document.getElementById('wa-btn');
+  waBtn.textContent='Generando...';waBtn.disabled=true;
+  const orig=el.style.cssText;
+  el.style.cssText='width:720px;background:#fff;padding:32px;font-family:Arial,sans-serif';
+  const co=getIssuer(inv);
+  const nombreEmpresa=co.commercial||co.name||'Mi Empresa';
+  html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false}).then(canvas=>{
+    el.style.cssText=orig;
+    const{jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210,M=10,imgW=W-M*2,imgH=canvas.height*imgW/canvas.width,pageH=297-M*2;
+    let yPos=0;
+    while(yPos<imgH){
+      if(yPos>0)doc.addPage();
+      const srcY=yPos*canvas.width/imgW,srcH=Math.min(pageH,imgH-yPos)*canvas.width/imgW;
+      const pc=document.createElement('canvas');
+      pc.width=canvas.width;pc.height=Math.min(srcH,canvas.height-srcY);
+      pc.getContext('2d').drawImage(canvas,0,srcY,canvas.width,pc.height,0,0,canvas.width,pc.height);
+      doc.addImage(pc.toDataURL('image/jpeg',0.92),'JPEG',M,M,imgW,Math.min(pageH,imgH-yPos));
+      yPos+=pageH;
+    }
+    const fileName='Factura_'+inv.num+'_'+(inv.client.commercial||inv.client.name).replace(/\s+/g,'_')+'.pdf';
+    doc.save(fileName);
+    const msg=encodeURIComponent(
+      'Hola '+(inv.client.commercial||inv.client.name)+', te enviamos la factura *'+inv.num+'* por valor de *'+fmt(inv.total)+'*.\n\n'+
+      'Fecha: '+inv.date+(inv.due?'\nVence: '+inv.due:'')+'\n'+
+      'Estado: '+inv.status+'\n\n'+
+      'El PDF ('+fileName+') se ha descargado en tu dispositivo. Por favor adjuntalo a este chat.\n\n'+
+      'Saludos,\n'+nombreEmpresa
+    );
+    setTimeout(()=>window.open('https://wa.me/'+phone+'?text='+msg,'_blank'),700);
+    waBtn.textContent='WhatsApp';waBtn.disabled=false;
+  }).catch(e=>{el.style.cssText=orig;waBtn.textContent='WhatsApp';waBtn.disabled=false;alert('Error: '+e.message);});
+}
 
 function downloadPDF(){
   const inv=currentPreviewInv;if(!inv)return;
