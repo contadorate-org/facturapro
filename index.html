@@ -507,6 +507,11 @@ tr:hover td{background:#fafaf8}
         <div><label>Fecha</label><input id="abono-fecha" type="date"/></div>
       </div>
       <div><label>Método</label><select id="abono-method"><option>Transferencia bancaria</option><option>Efectivo</option><option>Tarjeta de crédito</option><option>Tarjeta débito</option><option>Nequi / Daviplata</option><option>Cheque</option><option>Otro</option></select></div>
+      <div><label>💰 Registrar en cuenta de Tesorería</label>
+        <select id="abono-cuenta">
+          <option value="">— No registrar en tesorería —</option>
+        </select>
+      </div>
       <div><label>Nota</label><input id="abono-nota" type="text" placeholder="Referencia…"/></div>
     </div>
     <div id="abono-historial" style="margin-top:16px"></div>
@@ -1036,12 +1041,19 @@ function openAbonoModal(id){
   document.getElementById('abono-monto').value='';document.getElementById('abono-monto').max=sl;
   document.getElementById('abono-fecha').value=new Date().toISOString().split('T')[0];
   document.getElementById('abono-method').value='Transferencia bancaria';document.getElementById('abono-nota').value='';
+  // Cargar cuentas de tesorería
+  const cuentaSel=document.getElementById('abono-cuenta');
+  cuentaSel.innerHTML='<option value="">— No registrar en tesorería —</option>'+
+    cuentas.map(c=>`<option value="${c.id}">${c.nombre} (${c.tipo})</option>`).join('');
   const abonos=inv.abonos||[];
   document.getElementById('abono-historial').innerHTML=abonos.length?`
     <div style="font-size:12px;font-weight:600;color:var(--gray);margin-bottom:8px">Historial de Abonos</div>
     <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden">
       ${abonos.map((a,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px${i===abonos.length-1?';border-bottom:none':''}">
-        <div><div style="font-weight:600">${fmt(a.monto)}</div><div style="color:var(--gray);font-size:11px">${a.fecha} · ${a.method}${a.nota?' · '+a.nota:''}</div></div>
+        <div>
+          <div style="font-weight:600">${fmt(a.monto)}</div>
+          <div style="color:var(--gray);font-size:11px">${a.fecha} · ${a.method}${a.nota?' · '+a.nota:''}${a.cuentaNombre?` · <span style="color:var(--blue)">→ ${a.cuentaNombre}</span>`:''}</div>
+        </div>
         <button class="btn btn-sm btn-danger" onclick="eliminarAbono('${id}',${i})">🗑</button>
       </div>`).join('')}
     </div>`:'<div style="font-size:12px;color:var(--gray);text-align:center;padding:12px">Sin abonos aún.</div>';
@@ -1055,8 +1067,25 @@ function guardarAbono(){
   if(!monto||monto<=0){alert('Monto inválido.');return;}
   if(monto>sl){alert('Supera el saldo.');return;}
   if(!inv.abonos)inv.abonos=[];
-  inv.abonos.push({monto,fecha:document.getElementById('abono-fecha').value,method:document.getElementById('abono-method').value,nota:document.getElementById('abono-nota').value.trim()});
+  const cuentaId=document.getElementById('abono-cuenta').value;
+  const cuentaNombre=cuentaId?cuentas.find(c=>c.id===cuentaId)?.nombre||'':'';
+  const fecha=document.getElementById('abono-fecha').value;
+  const method=document.getElementById('abono-method').value;
+  const nota=document.getElementById('abono-nota').value.trim();
+  inv.abonos.push({monto,fecha,method,nota,cuentaId,cuentaNombre});
   if(saldoPendiente(inv)<=0)inv.status='Pagada';
+  // Registrar automáticamente en tesorería si se seleccionó cuenta
+  if(cuentaId){
+    tresIngresos.unshift({
+      id:Date.now().toString(),
+      fecha,
+      cuentaId,
+      cat:'Cobro de Factura',
+      monto,
+      metodo:method,
+      desc:`Abono Factura ${inv.num} - ${inv.client.commercial||inv.client.name}${nota?' · '+nota:''}`
+    });
+  }
   save();openAbonoModal(currentAbonoInvId);renderCartera();renderInvoices();
 }
 function eliminarAbono(invId,idx){
