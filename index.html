@@ -11,15 +11,15 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;font-size:14px;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
 :root{--blue:#1a6db5;--blue-l:#e6f1fb;--green:#3b6d11;--green-l:#eaf3de;--red:#a32d2d;--red-l:#fcebeb;--amber:#854f0b;--amber-l:#faeeda;--gray:#5f5e5a;--gray-l:#f1efe8;--border:#e0ddd6;--card:#fff;--radius:10px}
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a3a5c 0%,#1a6db5 100%)}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a3a5c,#1a6db5)}
 .login-box{background:#fff;border-radius:16px;padding:40px 36px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 .login-logo{text-align:center;margin-bottom:28px}
 .login-logo div:first-child{font-size:36px}
 .login-logo div:last-child{font-size:20px;font-weight:700;color:var(--blue);margin-top:6px}
 .login-box label{display:block;font-size:12px;font-weight:600;color:var(--gray);margin-bottom:5px}
-.login-box input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;transition:border .15s;margin-bottom:14px}
+.login-box input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;margin-bottom:14px}
 .login-box input:focus{border-color:var(--blue)}
-.login-btn{width:100%;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer}
+.login-btn{width:100%;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;margin-top:4px}
 .login-btn:hover{background:#155a99}
 .login-error{background:var(--red-l);color:var(--red);border:1px solid #f09595;border-radius:6px;padding:8px 12px;font-size:13px;margin-bottom:12px;display:none}
 .login-footer{text-align:center;font-size:11px;color:var(--gray);margin-top:18px}
@@ -30,9 +30,7 @@ nav{background:#fff;border-bottom:1px solid var(--border);padding:0 14px;display
 .tab:hover{color:#1a1a1a}
 .tab.active{color:var(--blue);border-bottom-color:var(--blue)}
 .nav-user{margin-left:auto;display:flex;align-items:center;gap:8px;padding-left:12px;border-left:1px solid var(--border);white-space:nowrap}
-.nav-user span{font-size:12px;color:var(--gray)}
 .btn-logout{padding:5px 10px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;color:var(--red)}
-.btn-logout:hover{background:var(--red-l)}
 .content{max-width:960px;margin:0 auto;padding:24px 16px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
 .card h2{font-size:15px;font-weight:600;margin-bottom:16px}
@@ -43,10 +41,9 @@ input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--border)
 input:focus,select:focus,textarea:focus{border-color:var(--blue)}
 textarea{resize:vertical;min-height:60px}
 .btn{padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;color:#1a1a1a}
-.btn:hover{background:var(--gray-l)}
 .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}.btn-primary:hover{background:#155a99}
-.btn-danger{color:var(--red)}.btn-danger:hover{background:var(--red-l);border-color:#f09595}
-.btn-success{background:var(--green);color:#fff;border-color:var(--green)}.btn-success:hover{background:#2d5309}
+.btn-danger{color:var(--red)}.btn-danger:hover{background:var(--red-l)}
+.btn-success{background:var(--green);color:#fff;border-color:var(--green)}
 .btn-sm{padding:5px 10px;font-size:12px}
 .flex{display:flex;gap:8px;align-items:center}
 .flex-end{justify-content:flex-end}.flex-between{justify-content:space-between}
@@ -70,27 +67,22 @@ tr:hover td{background:#fafaf8}
 .alert-error{background:var(--red-l);color:var(--red);border:1px solid #f09595}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:var(--radius);padding:24px;width:90%;max-width:560px;max-height:90vh;overflow-y:auto}
+.modal{background:#fff;border-radius:var(--radius);padding:24px;width:90%;max-width:520px;max-height:90vh;overflow-y:auto}
 .modal h3{font-size:16px;font-weight:600;margin-bottom:16px}
-.logo-upload{border:2px dashed var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;transition:border .2s;position:relative}
-.logo-upload:hover{border-color:var(--blue)}
+.logo-upload{border:2px dashed var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;position:relative}
 .logo-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .logo-preview{max-height:80px;max-width:200px;object-fit:contain;margin:0 auto;display:block}
 .autocomplete-wrap{position:relative}
 .autocomplete-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:6px;z-index:50;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,.1)}
 .autocomplete-item{padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)}
-.autocomplete-item:last-child{border-bottom:none}
 .autocomplete-item:hover{background:var(--blue-l)}
 .autocomplete-item small{color:var(--gray);font-size:11px;display:block}
 .prod-tag{display:inline-flex;align-items:center;background:var(--blue-l);color:var(--blue);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:500}
-/* FACTURADOR CARD */
 .issuer-card{border:2px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all .15s;position:relative}
-.issuer-card:hover{border-color:var(--blue);background:var(--blue-l)}
 .issuer-card.selected{border-color:var(--blue);background:var(--blue-l)}
 .issuer-card .check{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;background:#fff}
 .issuer-card.selected .check{background:var(--blue);border-color:var(--blue);color:#fff}
 .issuer-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:4px}
-/* CARTERA */
 .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
 .stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
 .stat-card .val{font-size:22px;font-weight:700;margin-top:6px}
@@ -100,32 +92,29 @@ tr:hover td{background:#fafaf8}
 .stat-card.amber{border-top:3px solid var(--amber)}.stat-card.amber .val{color:var(--amber)}
 .cartera-client{border:1px solid var(--border);border-radius:8px;margin-bottom:12px;overflow:hidden}
 .cartera-client-head{padding:12px 16px;background:var(--gray-l);display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
-.cartera-client-head:hover{background:#eae8e0}
 .cartera-client-body{display:none}.cartera-client-body.open{display:block}
-/* FACTURADORES TAB */
-.issuer-tab-card{border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;position:relative}
-.issuer-tab-card h3{font-size:14px;font-weight:600;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.issuer-tab-card{border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.issuer-tab-card h3{font-size:14px;font-weight:600;color:var(--blue);margin-bottom:14px}
 .issuer-badge{background:var(--blue-l);color:var(--blue);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:600}
+.sync-indicator{position:fixed;bottom:16px;right:16px;background:var(--green);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;display:none;z-index:999}
 @media(max-width:600px){.grid2,.grid3,.stat-grid,.issuer-selector{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo"><div>📄</div><div>FacturaPro</div></div>
-    <div class="login-error" id="login-error">Usuario o contraseña incorrectos.</div>
+    <div class="login-error" id="login-error"></div>
     <label>Usuario</label>
     <input id="login-user" type="text" placeholder="Ingresa tu usuario" autocomplete="username"/>
     <label>Contraseña</label>
     <input id="login-pass" type="password" placeholder="Ingresa tu contraseña" onkeydown="if(event.key==='Enter')doLogin()"/>
-    <button class="login-btn" style="margin-top:4px" onclick="doLogin()">Ingresar</button>
+    <button class="login-btn" onclick="doLogin()">Ingresar</button>
     <div class="login-footer">FacturaPro · Sistema de Facturación</div>
   </div>
 </div>
 
-<!-- APP -->
 <div id="app-screen">
 <nav>
   <div class="logo">📄 FacturaPro</div>
@@ -138,13 +127,12 @@ tr:hover td{background:#fafaf8}
   <div class="tab" onclick="goTab('empresa')">Mi Empresa</div>
   <div class="tab" onclick="goTab('datos')">💾 Datos</div>
   <div class="nav-user">
-    <span id="nav-username">👤</span>
+    <span id="nav-username" style="font-size:12px;color:var(--gray)">👤</span>
     <button class="btn-logout" onclick="doLogout()">Salir</button>
   </div>
 </nav>
 <div class="content">
 
-<!-- FACTURAS -->
 <div id="page-facturas" class="page active">
   <div class="flex flex-between" style="margin-bottom:16px">
     <div class="section-title" style="margin:0">Historial de Facturas</div>
@@ -165,35 +153,31 @@ tr:hover td{background:#fafaf8}
   </div>
 </div>
 
-<!-- NUEVA FACTURA -->
 <div id="page-nueva" class="page">
   <div class="section-title" id="form-title">Nueva Factura</div>
   <div id="alert-area"></div>
-
   <div class="card">
     <h2>Facturador</h2>
     <p style="font-size:12px;color:var(--gray);margin-bottom:12px">Selecciona a nombre de quién se emite esta factura:</p>
     <div class="issuer-selector" id="issuer-selector"></div>
   </div>
-
   <div class="card">
     <h2>Información de la Factura</h2>
     <div class="grid3">
-      <div><label>Número de Factura</label><input id="f-num" type="text"/></div>
+      <div><label>Número</label><input id="f-num" type="text"/></div>
       <div><label>Fecha</label><input id="f-date" type="date"/></div>
-      <div><label>Fecha de Vencimiento</label><input id="f-due" type="date"/></div>
+      <div><label>Vencimiento</label><input id="f-due" type="date"/></div>
     </div>
   </div>
-
   <div class="card">
     <h2>Cliente</h2>
     <div class="autocomplete-wrap" style="margin-bottom:14px">
       <label>Buscar cliente</label>
-      <input id="client-search-input" type="text" placeholder="Nombre, nombre comercial o NIT…" oninput="filterClientsSug()" autocomplete="off"/>
+      <input id="client-search-input" type="text" placeholder="Nombre, comercial o NIT…" oninput="filterClientsSug()" autocomplete="off"/>
       <div id="client-suggestions" class="autocomplete-list" style="display:none"></div>
     </div>
     <div class="grid2">
-      <div><label>Nombre / Razón Social *</label><input id="f-cname" type="text"/></div>
+      <div><label>Nombre *</label><input id="f-cname" type="text"/></div>
       <div><label>Nombre Comercial</label><input id="f-ccommercial" type="text"/></div>
       <div><label>NIT / Cédula</label><input id="f-cnit" type="text"/></div>
       <div><label>Email</label><input id="f-cemail" type="email"/></div>
@@ -201,7 +185,6 @@ tr:hover td{background:#fafaf8}
       <div><label>Dirección</label><input id="f-caddr" type="text"/></div>
     </div>
   </div>
-
   <div class="card">
     <h2>Productos / Servicios</h2>
     <div class="autocomplete-wrap" style="margin-bottom:14px">
@@ -222,7 +205,6 @@ tr:hover td{background:#fafaf8}
       </div>
     </div>
   </div>
-
   <div class="card">
     <h2>Pago y Notas</h2>
     <div class="grid2">
@@ -233,7 +215,6 @@ tr:hover td{background:#fafaf8}
       <div style="grid-column:1/-1"><label>Notas</label><textarea id="f-notes"></textarea></div>
     </div>
   </div>
-
   <div class="card">
     <h2>Enviar por Correo (EmailJS)</h2>
     <div class="grid3">
@@ -241,9 +222,7 @@ tr:hover td{background:#fafaf8}
       <div><label>Template ID</label><input id="ejs-template" type="text" placeholder="template_xxxxxxx"/></div>
       <div><label>Public Key</label><input id="ejs-pubkey" type="text" placeholder="xxxxxxxxxxxx"/></div>
     </div>
-    <p style="font-size:11px;color:var(--gray);margin-top:8px">Regístrate gratis en <a href="https://www.emailjs.com" target="_blank" style="color:var(--blue)">emailjs.com</a></p>
   </div>
-
   <div class="flex flex-end" style="gap:10px;margin-bottom:32px">
     <button class="btn" onclick="goTab('facturas')">Cancelar</button>
     <button class="btn" onclick="previewInvoice()">👁 Vista Previa</button>
@@ -251,7 +230,6 @@ tr:hover td{background:#fafaf8}
   </div>
 </div>
 
-<!-- CARTERA -->
 <div id="page-cartera" class="page">
   <div class="flex flex-between" style="margin-bottom:16px">
     <div class="section-title" style="margin:0">Relación de Cartera</div>
@@ -265,7 +243,6 @@ tr:hover td{background:#fafaf8}
   <div id="cartera-empty" style="display:none;text-align:center;padding:40px;color:var(--gray)">No hay facturas pendientes. ¡Todo al día! ✅</div>
 </div>
 
-<!-- CLIENTES -->
 <div id="page-clientes" class="page">
   <div class="flex flex-between" style="margin-bottom:16px">
     <div class="section-title" style="margin:0">Clientes</div>
@@ -275,13 +252,12 @@ tr:hover td{background:#fafaf8}
     <input id="search-clients" type="text" placeholder="🔍 Buscar…" oninput="renderClients()" style="max-width:400px"/>
   </div>
   <div class="card" style="padding:0;overflow:hidden">
-    <table><thead><tr><th>Nombre</th><th>Nombre Comercial</th><th>NIT</th><th>Email</th><th>Teléfono</th><th></th></tr></thead>
+    <table><thead><tr><th>Nombre</th><th>Comercial</th><th>NIT</th><th>Email</th><th>Teléfono</th><th></th></tr></thead>
     <tbody id="clients-tbody"></tbody></table>
     <div id="clients-empty" style="display:none;text-align:center;padding:40px;color:var(--gray)">No hay clientes.</div>
   </div>
 </div>
 
-<!-- PRODUCTOS -->
 <div id="page-productos" class="page">
   <div class="flex flex-between" style="margin-bottom:16px">
     <div class="section-title" style="margin:0">Catálogo</div>
@@ -297,32 +273,27 @@ tr:hover td{background:#fafaf8}
   </div>
 </div>
 
-<!-- FACTURADORES -->
 <div id="page-facturadores" class="page">
   <div class="section-title">Facturadores</div>
-  <p style="font-size:13px;color:var(--gray);margin-bottom:20px">Configura hasta 3 empresas o personas a nombre de quienes puedes emitir facturas. El consecutivo de numeración es compartido entre todos.</p>
+  <p style="font-size:13px;color:var(--gray);margin-bottom:20px">Configura hasta 3 empresas o personas a nombre de quienes puedes emitir facturas.</p>
   <div id="issuers-form"></div>
 </div>
 
-<!-- DATOS -->
 <div id="page-datos" class="page">
   <div class="section-title">Gestión de Datos</div>
-
   <div class="card">
     <h2>📤 Exportar Datos</h2>
-    <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Descarga una copia de seguridad con todas tus facturas, clientes, productos, facturadores y configuración de empresa en un archivo <strong>.json</strong>. Guárdalo en un lugar seguro.</p>
+    <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Descarga una copia de seguridad completa en formato .json.</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-primary" onclick="exportarDatos()">⬇ Exportar Todo</button>
       <button class="btn" onclick="exportarSolo('facturas')">Solo Facturas</button>
       <button class="btn" onclick="exportarSolo('clientes')">Solo Clientes</button>
     </div>
   </div>
-
   <div class="card">
     <h2>📥 Importar Datos</h2>
-    <p style="font-size:13px;color:var(--gray);margin-bottom:4px">Carga un archivo de respaldo previamente exportado desde FacturaPro.</p>
     <div style="background:var(--amber-l);border:1px solid #e8c87a;border-radius:6px;padding:10px 14px;font-size:12px;color:var(--amber);margin-bottom:16px">
-      ⚠️ <strong>Atención:</strong> La importación reemplaza los datos actuales. Exporta primero como respaldo.
+      ⚠️ La importación reemplaza los datos actuales.
     </div>
     <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
       <label style="display:inline-block;padding:8px 16px;background:var(--blue);color:#fff;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500">
@@ -332,33 +303,18 @@ tr:hover td{background:#fafaf8}
       <span id="import-status" style="font-size:13px;color:var(--gray)"></span>
     </div>
   </div>
-
   <div class="card">
-    <h2>🗑 Limpiar Datos</h2>
-    <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Elimina todos los datos almacenados. Esta acción no se puede deshacer. Exporta primero.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn btn-danger" onclick="limpiarDatos('facturas')">Borrar Facturas</button>
-      <button class="btn btn-danger" onclick="limpiarDatos('todo')">Borrar Todo</button>
-    </div>
-  </div>
-
-  <div class="card" style="border-color:var(--blue)">
-    <h2 style="color:var(--blue)">ℹ️ ¿Cómo usar en otro dispositivo?</h2>
-    <ol style="font-size:13px;color:var(--gray);line-height:2;padding-left:18px">
-      <li>En este dispositivo: haz clic en <strong>"Exportar Todo"</strong> y guarda el archivo .json</li>
-      <li>Envíate el archivo por WhatsApp, email o Google Drive</li>
-      <li>En el otro dispositivo: abre la app y ve a <strong>💾 Datos → Importar</strong></li>
-      <li>Selecciona el archivo .json — todos los datos quedarán disponibles</li>
-    </ol>
-    <p style="font-size:12px;color:var(--blue);margin-top:10px;font-weight:500">💡 Próximamente: sincronización automática en la nube con Supabase.</p>
+    <h2>☁️ Estado Sincronización</h2>
+    <p style="font-size:13px;color:var(--gray);margin-bottom:12px">Los datos se sincronizan automáticamente con Supabase al guardar.</p>
+    <button class="btn btn-primary" onclick="forceSyncSupabase()">🔄 Sincronizar Ahora</button>
+    <div id="sync-status" style="font-size:12px;color:var(--gray);margin-top:8px"></div>
   </div>
 </div>
 
-<!-- EMPRESA -->
 <div id="page-empresa" class="page">
   <div class="section-title">Mi Empresa (Principal)</div>
   <div class="card">
-    <h2>Logo de la Empresa</h2>
+    <h2>Logo</h2>
     <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
       <div class="logo-upload" style="flex:1;min-width:200px;max-width:300px">
         <input type="file" accept="image/*" onchange="uploadLogo(event)"/>
@@ -389,6 +345,28 @@ tr:hover td{background:#fafaf8}
 </div>
 
 <!-- MODALES -->
+<div class="modal-bg" id="abono-modal">
+  <div class="modal" style="max-width:460px">
+    <div class="flex flex-between" style="margin-bottom:14px"><h3>Registrar Abono</h3><button class="btn btn-sm" onclick="closeAbonoModal()">✕</button></div>
+    <div id="abono-inv-info" style="background:var(--gray-l);border-radius:8px;padding:12px;margin-bottom:14px;font-size:13px"></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="grid2">
+        <div><label>Monto *</label><input id="abono-monto" type="number" min="1" step="100" placeholder="0"/></div>
+        <div><label>Fecha</label><input id="abono-fecha" type="date"/></div>
+      </div>
+      <div><label>Método de Pago</label>
+        <select id="abono-method"><option>Transferencia bancaria</option><option>Efectivo</option><option>Tarjeta de crédito</option><option>Tarjeta débito</option><option>Nequi / Daviplata</option><option>Cheque</option><option>Otro</option></select>
+      </div>
+      <div><label>Nota (opcional)</label><input id="abono-nota" type="text" placeholder="Referencia del pago…"/></div>
+    </div>
+    <div id="abono-historial" style="margin-top:16px"></div>
+    <div class="flex flex-end" style="margin-top:16px;gap:8px">
+      <button class="btn" onclick="closeAbonoModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarAbono()">💰 Registrar Abono</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="client-modal">
   <div class="modal">
     <div class="flex flex-between" style="margin-bottom:14px"><h3 id="client-modal-title">Nuevo Cliente</h3><button class="btn btn-sm" onclick="closeClientModal()">✕</button></div>
@@ -411,19 +389,11 @@ tr:hover td{background:#fafaf8}
   <div class="modal">
     <div class="flex flex-between" style="margin-bottom:14px"><h3 id="prod-modal-title">Nuevo Producto</h3><button class="btn btn-sm" onclick="closeProdModal()">✕</button></div>
     <div style="display:flex;flex-direction:column;gap:10px">
-      <div class="grid2">
-        <div><label>Código</label><input id="p-code" type="text"/></div>
-        <div><label>Categoría</label><input id="p-cat" type="text"/></div>
-      </div>
+      <div class="grid2"><div><label>Código</label><input id="p-code" type="text"/></div><div><label>Categoría</label><input id="p-cat" type="text"/></div></div>
       <div><label>Nombre *</label><input id="p-name" type="text"/></div>
       <div><label>Descripción</label><textarea id="p-desc" style="min-height:50px"></textarea></div>
-      <div class="grid2">
-        <div><label>Precio *</label><input id="p-price" type="number" min="0" step="100"/></div>
-        <div><label>IVA %</label><input id="p-iva" type="number" value="19"/></div>
-      </div>
-      <div><label>Unidad</label>
-        <select id="p-unit"><option>Und</option><option>Hrs</option><option>Mes</option><option>Kg</option><option>Lt</option><option>Mts</option><option>Global</option><option>Otro</option></select>
-      </div>
+      <div class="grid2"><div><label>Precio *</label><input id="p-price" type="number" min="0" step="100"/></div><div><label>IVA %</label><input id="p-iva" type="number" value="19"/></div></div>
+      <div><label>Unidad</label><select id="p-unit"><option>Und</option><option>Hrs</option><option>Mes</option><option>Kg</option><option>Lt</option><option>Mts</option><option>Global</option><option>Otro</option></select></div>
     </div>
     <div class="flex flex-end" style="margin-top:16px;gap:8px">
       <button class="btn" onclick="closeProdModal()">Cancelar</button>
@@ -460,57 +430,111 @@ tr:hover td{background:#fafaf8}
   </div>
 </div>
 
+<div class="sync-indicator" id="sync-ind">✅ Guardado</div>
+
 <script>
-// ── EXPORTAR / IMPORTAR ───────────────────────────────
-function exportarDatos(){
-  const data={
-    version:'1.0',
-    fecha:new Date().toISOString(),
-    invoices,clients,products,company,issuers,
-    credentials:localStorage.getItem('fp_credentials')
-  };
-  descargarJSON(data,'FacturaPro_backup_'+new Date().toISOString().split('T')[0]+'.json');
-}
-function exportarSolo(tipo){
-  let data={version:'1.0',fecha:new Date().toISOString()};
-  if(tipo==='facturas') data.invoices=invoices;
-  if(tipo==='clientes') data.clients=clients;
-  descargarJSON(data,'FacturaPro_'+tipo+'_'+new Date().toISOString().split('T')[0]+'.json');
-}
-function descargarJSON(data,filename){
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
-  URL.revokeObjectURL(url);
-}
-function importarDatos(e){
-  const file=e.target.files[0];if(!file)return;
-  const status=document.getElementById('import-status');
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    try{
-      const data=JSON.parse(ev.target.result);
-      if(!confirm('¿Confirmas la importación? Los datos actuales serán reemplazados.')) return;
-      if(data.invoices){invoices=data.invoices;localStorage.setItem('fp_invoices',JSON.stringify(invoices));}
-      if(data.clients){clients=data.clients;localStorage.setItem('fp_clients',JSON.stringify(clients));}
-      if(data.products){products=data.products;localStorage.setItem('fp_products',JSON.stringify(products));}
-      if(data.company){company=data.company;localStorage.setItem('fp_company',JSON.stringify(company));}
-      if(data.issuers){issuers=data.issuers;localStorage.setItem('fp_issuers',JSON.stringify(issuers));}
-      if(data.credentials) localStorage.setItem('fp_credentials',data.credentials);
-      status.innerHTML='<span style="color:var(--green);font-weight:600">✅ Datos importados correctamente — '+
-        (data.invoices?.length||0)+' facturas, '+(data.clients?.length||0)+' clientes, '+(data.products?.length||0)+' productos.</span>';
-      document.getElementById('login-screen').style.display='flex';
-  document.getElementById('login-user').focus();
-    }catch(err){
-      status.innerHTML='<span style="color:var(--red)">❌ Error al leer el archivo. Asegúrate de que sea un backup válido de FacturaPro.</span>';
+// ── SUPABASE ──────────────────────────────────────────
+const _SB = supabase.createClient(
+  'https://rddqovxastacbvhhwggv.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkZHFvdnhhc3RhY2J2aGh3Z2d2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNjQwNTgsImV4cCI6MjA5NTY0MDA1OH0.eA8WpfrGn3en4NZ-IG3j8XSynvujrExD6Bv1Lmp1fCs'
+);
+
+let _uid=null, _saveTimer=null;
+
+// ── VARIABLES GLOBALES ────────────────────────────────
+let invoices=[], clients=[], products=[];
+let company={name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:'',logo:''};
+let issuers=[
+  {id:'1',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},
+  {id:'2',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},
+  {id:'3',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''}
+];
+let selectedIssuerId='1';
+let editingId=null, editingClientIdx=null, editingProdIdx=null;
+let items=[], currentPreviewInv=null, currentAbonoInvId=null;
+
+// ── AUTH ──────────────────────────────────────────────
+async function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-error');
+  const btn=document.querySelector('.login-btn');
+  err.style.display='none';
+  if(!u||!p){err.style.display='block';err.textContent='Ingresa usuario y contraseña';return;}
+  btn.textContent='Verificando...';btn.disabled=true;
+  try{
+    const{data,error}=await _SB.from('fp_users').select('*').eq('username',u).maybeSingle();
+    console.log('Login:',{data,error});
+    if(error){err.style.display='block';err.textContent='Error BD: '+error.message;}
+    else if(!data){err.style.display='block';err.textContent='Usuario no encontrado.';}
+    else if(data.password!==p){err.style.display='block';err.textContent='Contraseña incorrecta.';}
+    else if(data.blocked){err.style.display='block';err.textContent='Acceso bloqueado.';}
+    else{
+      _uid=data.id;
+      await _loadData();
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('app-screen').style.display='block';
+      document.getElementById('nav-username').textContent='👤 '+(data.full_name||data.username);
+      renderInvoices();
     }
-  };
-  reader.readAsText(file);
+  }catch(e){err.style.display='block';err.textContent='Error: '+e.message;console.error(e);}
+  btn.textContent='Ingresar';btn.disabled=false;
 }
-function limpiarDatos(tipo){
-  if(tipo==='facturas'){
-    if(!confirm('¿Eliminar TODAS las facturas? Esta acción no se puede deshacer.'))return;
-    invoices=[];localStorage.setItem('fp_invoices','[]');renderInvoices();
+
+async function _loadData(){
+  try{
+    const{data,error}=await _SB.from('fp_data').select('data').eq('user_id',_uid).maybeSingle();
+    if(error){console.log('Load error:',error);return;}
+    if(data&&data.data){
+      const d=data.data;
+      if(d.invoices) invoices=d.invoices;
+      if(d.clients) clients=d.clients;
+      if(d.products) products=d.products;
+      if(d.company) company={...company,...d.company};
+      if(d.issuers) issuers=d.issuers;
+    }
+  }catch(e){console.error('Load error:',e);}
+}
+
+async function _saveData(){
+  if(!_uid) return;
+  try{
+    const payload={invoices,clients,products,company,issuers};
+    const{error}=await _SB.from('fp_data').upsert({user_id:_uid,data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+    if(error) console.log('Save error:',error);
+    else{
+      const ind=document.getElementById('sync-ind');
+      ind.style.display='flex';
+      setTimeout(()=>ind.style.display='none',2000);
+    }
+  }catch(e){console.error('Save error:',e);}
+}
+
+function save(){
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(_saveData,800);
+}
+
+async function forceSyncSupabase(){
+  const el=document.getElementById('sync-status');
+  el.textContent='Sincronizando...';
+  await _saveData();
+  el.textContent='✅ Sincronizado correctamente - '+new Date().toLocaleTimeString();
+}
+
+function doLogout(){
+  _uid=null;
+  invoices=[];clients=[];products=[];
+  company={name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:'',logo:''};
+  issuers=[{id:'1',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},{id:'2',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},{id:'3',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''}];
+  document.getElementById('app-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-error').style.display='none';
+}
+
+function openChangePwd(){
   ['pwd-current','pwd-new','pwd-confirm'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('pwd-error').style.display='none';
   document.getElementById('pwd-modal').classList.add('open');
@@ -522,193 +546,91 @@ async function savePassword(){
   const err=document.getElementById('pwd-error');
   if(nw.length<6){err.textContent='Mínimo 6 caracteres.';err.style.display='block';return;}
   if(nw!==cf){err.textContent='Las contraseñas no coinciden.';err.style.display='block';return;}
-  const{data}=await sb.from('fp_users').select('password').eq('id',currentUserId).single();
+  const{data}=await _SB.from('fp_users').select('password').eq('id',_uid).single();
   if(!data||data.password!==cur){err.textContent='Contraseña actual incorrecta.';err.style.display='block';return;}
-  await sb.from('fp_users').update({password:nw}).eq('id',currentUserId);
+  await _SB.from('fp_users').update({password:nw}).eq('id',_uid);
   document.getElementById('pwd-modal').classList.remove('open');
   alert('✅ Contraseña actualizada.');
-}alert('Facturas eliminadas.');
-  } else {
-    if(!confirm('¿Eliminar TODOS los datos? Esta acción no se puede deshacer.'))return;
-    ['fp_invoices','fp_clients','fp_products','fp_company','fp_issuers'].forEach(k=>localStorage.removeItem(k));
-    invoices=[];clients=[];products=[];
-    company={name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:'',logo:''};
-    issuers=[{id:'1',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},{id:'2',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},{id:'3',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''}];
-    save();alert('Todos los datos eliminados.');
-  }
 }
 
-const SURL='https://rddqovxastacbvhhwggv.supabase.co';
-const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkZHFvdnhhc3RhY2J2aGh3Z2d2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNjQwNTgsImV4cCI6MjA5NTY0MDA1OH0.eA8WpfrGn3en4NZ-IG3j8XSynvujrExD6Bv1Lmp1fCs';
-const sb=supabase.createClient(SURL,SKEY);
-let currentUserId=null,currentUserData=null,saveTimer=null;
-
-async function doLogin(){
-  const u=document.getElementById('login-user').value.trim();
-  const p=document.getElementById('login-pass').value;
-  const err=document.getElementById('login-error');
-  const btn=document.querySelector('.login-btn');
-  if(!u||!p){err.style.display='block';err.textContent='Ingresa usuario y contraseña';return;}
-  btn.textContent='Verificando...';btn.disabled=true;
-  err.style.display='none';
-  try{
-    // Buscar por usuario solamente primero
-    const{data,error}=await sb.from('fp_users').select('*').eq('username',u).maybeSingle();
-    console.log('Login response:',data,error);
-    if(error){
-      err.style.display='block';
-      err.textContent='Error de conexión: '+error.message;
-    } else if(!data){
-      err.style.display='block';
-      err.textContent='Usuario no encontrado.';
-      document.getElementById('login-pass').value='';
-    } else if(data.password!==p){
-      err.style.display='block';
-      err.textContent='Contraseña incorrecta.';
-      document.getElementById('login-pass').value='';
-    } else if(data.blocked){
-      err.style.display='block';
-      err.textContent='Tu acceso ha sido bloqueado.';
-    } else {
-      currentUserId=data.id;
-      currentUserData=data;
-      await loadFromSupabase();
-      document.getElementById('login-screen').style.display='none';
-      document.getElementById('app-screen').style.display='block';
-      document.getElementById('nav-username').textContent='👤 '+(data.full_name||data.username);
+// ── EXPORTAR / IMPORTAR ───────────────────────────────
+function exportarDatos(){
+  descargarJSON({version:'1.0',fecha:new Date().toISOString(),invoices,clients,products,company,issuers},'FacturaPro_backup_'+new Date().toISOString().split('T')[0]+'.json');
+}
+function exportarSolo(tipo){
+  const d={version:'1.0',fecha:new Date().toISOString()};
+  if(tipo==='facturas')d.invoices=invoices;
+  if(tipo==='clientes')d.clients=clients;
+  descargarJSON(d,'FacturaPro_'+tipo+'_'+new Date().toISOString().split('T')[0]+'.json');
+}
+function descargarJSON(data,filename){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.download=filename;a.click();
+}
+function importarDatos(e){
+  const file=e.target.files[0];if(!file)return;
+  const st=document.getElementById('import-status');
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!confirm('¿Confirmas la importación?'))return;
+      if(d.invoices)invoices=d.invoices;
+      if(d.clients)clients=d.clients;
+      if(d.products)products=d.products;
+      if(d.company)company=d.company;
+      if(d.issuers)issuers=d.issuers;
+      save();
+      st.innerHTML='<span style="color:var(--green);font-weight:600">✅ '+(d.invoices?.length||0)+' facturas, '+(d.clients?.length||0)+' clientes importados.</span>';
       renderInvoices();
-    }
-  }catch(e){
-    err.style.display='block';
-    err.textContent='Error: '+e.message;
-    console.log('Login error:',e);
-  }
-  btn.textContent='Ingresar';btn.disabled=false;
+    }catch(err){st.innerHTML='<span style="color:var(--red)">❌ Archivo inválido.</span>';}
+  };
+  r.readAsText(file);
 }
 
-async function loadFromSupabase(){
-  try{
-    const{data,error}=await sb.from('fp_data').select('data').eq('user_id',currentUserId).single();
-    if(error){
-      // Si no existe el registro, crearlo vacío
-      if(error.code==='PGRST116'){
-        await sb.from('fp_data').insert({user_id:currentUserId,data:{},updated_at:new Date().toISOString()});
-      }
-      return;
-    }
-    if(data&&data.data){
-      const d=data.data;
-      if(d.invoices) invoices=d.invoices;
-      if(d.clients) clients=d.clients;
-      if(d.products) products=d.products;
-      if(d.company) company={...company,...d.company};
-      if(d.issuers) issuers=d.issuers;
-    }
-  } catch(e){console.log('Error cargando:',e);}
-}
-
-async function saveToSupabase(){
-  if(!currentUserId) return;
-  const payload={invoices,clients,products,company,issuers};
-  try{
-    // Intentar update primero
-    const{error:upErr}=await sb.from('fp_data').update(
-      {data:payload, updated_at:new Date().toISOString()}
-    ).eq('user_id',currentUserId);
-    if(upErr){
-      // Si falla, intentar insert
-      const{error:inErr}=await sb.from('fp_data').insert(
-        {user_id:currentUserId, data:payload, updated_at:new Date().toISOString()}
-      );
-      if(inErr) console.log('Error insert Supabase:',inErr);
-    }
-    console.log('✅ Guardado en Supabase');
-  }catch(e){console.log('Error Supabase:',e);}
-}
-
-function save(){
-  localStorage.setItem('fp_invoices',JSON.stringify(invoices));
-  localStorage.setItem('fp_clients',JSON.stringify(clients));
-  localStorage.setItem('fp_products',JSON.stringify(products));
-  localStorage.setItem('fp_company',JSON.stringify(company));
-  localStorage.setItem('fp_issuers',JSON.stringify(issuers));
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(saveToSupabase,1000);
-}
-
-function doLogout(){
-  currentUserId=null;currentUserData=null;
-  invoices=[];clients=[];products=[];
-  company={name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:'',logo:''};
-  issuers=[{id:'1',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},{id:'2',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},{id:'3',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''}];
-  document.getElementById('app-screen').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('login-user').value='';
-  document.getElementById('login-pass').value='';
-  document.getElementById('login-error').style.display='none';
-}
-
-// ── DATA ──────────────────────────────────────────────
-let invoices=JSON.parse(localStorage.getItem('fp_invoices')||'[]');
-let clients=JSON.parse(localStorage.getItem('fp_clients')||'[]');
-let products=JSON.parse(localStorage.getItem('fp_products')||'[]');
-let company=JSON.parse(localStorage.getItem('fp_company')||'{"name":"","commercial":"","nit":"","phone":"","email":"","addr":"","footer":"","logo":""}');
-let issuers=JSON.parse(localStorage.getItem('fp_issuers')||JSON.stringify([
-  {id:'1',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},
-  {id:'2',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},
-  {id:'3',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''}
-]));
-let selectedIssuerId='1';
-let editingId=null,editingClientIdx=null,editingProdIdx=null,items=[],currentPreviewInv=null;
-
+// ── NAV ───────────────────────────────────────────────
 function goTab(t){
-  document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['facturas','nueva','cartera','clientes','productos','facturadores','empresa','datos'][i]===t)});
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['facturas','nueva','cartera','clientes','productos','facturadores','empresa','datos'][i]===t));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+t).classList.add('active');
-  if(t==='facturas') renderInvoices();
-  if(t==='cartera') renderCartera();
-  if(t==='clientes') renderClients();
-  if(t==='productos') renderProds();
-  if(t==='facturadores') renderIssuersForm();
-  if(t==='empresa') loadCompanyForm();
-  if(t==='nueva'&&!editingId) initNewInvoice();
+  if(t==='facturas')renderInvoices();
+  if(t==='cartera')renderCartera();
+  if(t==='clientes')renderClients();
+  if(t==='productos')renderProds();
+  if(t==='facturadores')renderIssuersForm();
+  if(t==='empresa')loadCompanyForm();
+  if(t==='nueva'&&!editingId)initNewInvoice();
 }
 
 // ── FACTURADORES ──────────────────────────────────────
 function renderIssuersForm(){
-  const html=issuers.map((is,i)=>`
+  document.getElementById('issuers-form').innerHTML=issuers.map((is,i)=>`
   <div class="issuer-tab-card">
     <h3><span class="issuer-badge">Facturador ${i+1}</span> ${is.commercial||is.name||'(Sin configurar)'}</h3>
     <div class="grid2">
       <div><label>Nombre / Razón Social</label><input type="text" value="${is.name||''}" oninput="issuers[${i}].name=this.value"/></div>
       <div><label>Nombre Comercial</label><input type="text" value="${is.commercial||''}" oninput="issuers[${i}].commercial=this.value"/></div>
-      <div><label>NIT / Cédula</label><input type="text" value="${is.nit||''}" oninput="issuers[${i}].nit=this.value"/></div>
+      <div><label>NIT</label><input type="text" value="${is.nit||''}" oninput="issuers[${i}].nit=this.value"/></div>
       <div><label>Teléfono</label><input type="text" value="${is.phone||''}" oninput="issuers[${i}].phone=this.value"/></div>
       <div><label>Email</label><input type="email" value="${is.email||''}" oninput="issuers[${i}].email=this.value"/></div>
       <div><label>Dirección</label><input type="text" value="${is.addr||''}" oninput="issuers[${i}].addr=this.value"/></div>
-      <div style="grid-column:1/-1"><label>Pie de Factura / Notas del Facturador</label><textarea oninput="issuers[${i}].footer=this.value">${is.footer||''}</textarea></div>
+      <div style="grid-column:1/-1"><label>Pie de Factura</label><textarea oninput="issuers[${i}].footer=this.value">${is.footer||''}</textarea></div>
     </div>
-  </div>`).join('');
-  document.getElementById('issuers-form').innerHTML=html+`<div class="flex flex-end" style="margin-bottom:32px"><button class="btn btn-primary" onclick="saveIssuers()">💾 Guardar Facturadores</button></div>`;
+  </div>`).join('')+`<div class="flex flex-end" style="margin-bottom:32px"><button class="btn btn-primary" onclick="saveIssuers()">💾 Guardar Facturadores</button></div>`;
 }
 function saveIssuers(){save();alert('✅ Facturadores guardados.');}
-
 function renderIssuerSelector(){
-  const sel=document.getElementById('issuer-selector');
-  if(!sel) return;
-  sel.innerHTML=issuers.map((is,i)=>`
-    <div class="issuer-card ${selectedIssuerId===is.id?'selected':''}" onclick="selectIssuer('${is.id}')">
-      <div class="check">${selectedIssuerId===is.id?'✓':''}</div>
-      <div style="font-size:11px;color:var(--blue);font-weight:600;margin-bottom:4px">Facturador ${i+1}</div>
-      <div style="font-size:13px;font-weight:600">${is.commercial||is.name||'(Sin configurar)'}</div>
-      ${is.commercial?`<div style="font-size:11px;color:var(--gray)">${is.name}</div>`:''}
-      <div style="font-size:11px;color:var(--gray);margin-top:2px">${is.nit||''}</div>
-    </div>`).join('');
+  const sel=document.getElementById('issuer-selector');if(!sel)return;
+  sel.innerHTML=issuers.map((is,i)=>`<div class="issuer-card ${selectedIssuerId===is.id?'selected':''}" onclick="selectIssuer('${is.id}')">
+    <div class="check">${selectedIssuerId===is.id?'✓':''}</div>
+    <div style="font-size:11px;color:var(--blue);font-weight:600;margin-bottom:4px">Facturador ${i+1}</div>
+    <div style="font-size:13px;font-weight:600">${is.commercial||is.name||'(Sin configurar)'}</div>
+    ${is.commercial?`<div style="font-size:11px;color:var(--gray)">${is.name}</div>`:''}
+    <div style="font-size:11px;color:var(--gray)">${is.nit||''}</div>
+  </div>`).join('');
 }
-function selectIssuer(id){
-  selectedIssuerId=id;
-  renderIssuerSelector();
-}
+function selectIssuer(id){selectedIssuerId=id;renderIssuerSelector();}
 
 // ── LOGO ──────────────────────────────────────────────
 function uploadLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{company.logo=ev.target.result;save();showLogoPreview(ev.target.result);};r.readAsDataURL(f);}
@@ -720,10 +642,9 @@ function initNewInvoice(){
   editingId=null;
   document.getElementById('form-title').textContent='Nueva Factura';
   const today=new Date().toISOString().split('T')[0];
-  const due=new Date(Date.now()+30*86400000).toISOString().split('T')[0];
   document.getElementById('f-num').value='F-'+(invoices.length+1).toString().padStart(3,'0');
   document.getElementById('f-date').value=today;
-  document.getElementById('f-due').value=due;
+  document.getElementById('f-due').value=new Date(Date.now()+30*864e5).toISOString().split('T')[0];
   ['f-cname','f-ccommercial','f-cnit','f-cemail','f-cphone','f-caddr','f-notes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-status').value='Pendiente';
   document.getElementById('client-search-input').value='';
@@ -734,40 +655,31 @@ function initNewInvoice(){
   renderItems();
 }
 
-// ── AUTOCOMPLETE CLIENTES ─────────────────────────────
+// ── AUTOCOMPLETE ──────────────────────────────────────
 function filterClientsSug(){
   const q=document.getElementById('client-search-input').value.toLowerCase().trim();
   const box=document.getElementById('client-suggestions');
   if(!q){box.style.display='none';return;}
   const m=clients.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.nit||'').toLowerCase().includes(q)||(c.commercial||'').toLowerCase().includes(q));
   if(!m.length){box.style.display='none';return;}
-  box.innerHTML=m.map(c=>`<div class="autocomplete-item" onclick="selectClientForInv(${clients.indexOf(c)})">
-    <strong>${c.name}</strong>${c.commercial?` · <span style="color:var(--blue)">${c.commercial}</span>`:''}
-    <small>${c.nit?'NIT: '+c.nit+' · ':''} ${c.email||''}</small></div>`).join('');
+  box.innerHTML=m.map(c=>`<div class="autocomplete-item" onclick="selectClientForInv(${clients.indexOf(c)})"><strong>${c.name}</strong>${c.commercial?` · <span style="color:var(--blue)">${c.commercial}</span>`:''}<small>${c.nit?'NIT: '+c.nit+' · ':''} ${c.email||''}</small></div>`).join('');
   box.style.display='block';
 }
 function selectClientForInv(i){
   const c=clients[i];
-  document.getElementById('f-cname').value=c.name||'';
-  document.getElementById('f-ccommercial').value=c.commercial||'';
-  document.getElementById('f-cnit').value=c.nit||'';
-  document.getElementById('f-cemail').value=c.email||'';
-  document.getElementById('f-cphone').value=c.phone||'';
-  document.getElementById('f-caddr').value=c.addr||'';
+  document.getElementById('f-cname').value=c.name||'';document.getElementById('f-ccommercial').value=c.commercial||'';
+  document.getElementById('f-cnit').value=c.nit||'';document.getElementById('f-cemail').value=c.email||'';
+  document.getElementById('f-cphone').value=c.phone||'';document.getElementById('f-caddr').value=c.addr||'';
   document.getElementById('client-search-input').value=c.name+(c.commercial?' · '+c.commercial:'');
   document.getElementById('client-suggestions').style.display='none';
 }
-
-// ── AUTOCOMPLETE PRODUCTOS ────────────────────────────
 function filterProdSug(){
   const q=document.getElementById('prod-search-input').value.toLowerCase().trim();
   const box=document.getElementById('prod-suggestions');
   if(!q){box.style.display='none';return;}
   const m=products.filter(p=>(p.name||'').toLowerCase().includes(q)||(p.code||'').toLowerCase().includes(q));
   if(!m.length){box.style.display='none';return;}
-  box.innerHTML=m.map(p=>`<div class="autocomplete-item" onclick="addProdToItems(${products.indexOf(p)})">
-    <strong>${p.name}</strong>${p.code?` <span style="font-size:11px;color:var(--gray)">[${p.code}]</span>`:''}
-    <small>${fmt(p.price)} · IVA ${p.iva}%</small></div>`).join('');
+  box.innerHTML=m.map(p=>`<div class="autocomplete-item" onclick="addProdToItems(${products.indexOf(p)})"><strong>${p.name}</strong>${p.code?` <span style="font-size:11px;color:var(--gray)">[${p.code}]</span>`:''}<small>${fmt(p.price)} · IVA ${p.iva}%</small></div>`).join('');
   box.style.display='block';
 }
 function addProdToItems(i){
@@ -779,8 +691,7 @@ function addProdToItems(i){
 }
 document.addEventListener('click',e=>{
   if(!e.target.closest('.autocomplete-wrap')){
-    document.getElementById('client-suggestions').style.display='none';
-    document.getElementById('prod-suggestions').style.display='none';
+    ['client-suggestions','prod-suggestions'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   }
 });
 
@@ -817,7 +728,7 @@ function getInvoiceData(){
   const issuer=issuers.find(x=>x.id===selectedIssuerId)||issuers[0];
   return{id:editingId||Date.now().toString(),num:document.getElementById('f-num').value,
     date:document.getElementById('f-date').value,due:document.getElementById('f-due').value,
-    issuerId:selectedIssuerId, issuer:{...issuer},
+    issuerId:selectedIssuerId,issuer:{...issuer},
     client:{name:document.getElementById('f-cname').value,commercial:document.getElementById('f-ccommercial').value,nit:document.getElementById('f-cnit').value,email:document.getElementById('f-cemail').value,phone:document.getElementById('f-cphone').value,addr:document.getElementById('f-caddr').value},
     items:JSON.parse(JSON.stringify(items)),sub,iva,total:sub+iva,
     status:document.getElementById('f-status').value,method:document.getElementById('f-method').value,notes:document.getElementById('f-notes').value,
@@ -825,8 +736,8 @@ function getInvoiceData(){
 }
 function saveInvoice(){
   const d=getInvoiceData();
-  if(!d.num||!d.client.name){showAlert('Completa número de factura y nombre del cliente.','error');return;}
-  if(!d.issuer.name&&!d.issuer.commercial){showAlert('Configura los datos del facturador seleccionado primero.','error');return;}
+  if(!d.num||!d.client.name){showAlert('Completa número y nombre del cliente.','error');return;}
+  if(!d.issuer.name&&!d.issuer.commercial){showAlert('Configura el facturador seleccionado primero.','error');return;}
   if(editingId){const idx=invoices.findIndex(x=>x.id===editingId);if(idx>-1)invoices[idx]=d;}
   else invoices.unshift(d);
   save();showAlert('Factura guardada.','success');
@@ -839,30 +750,24 @@ function showAlert(msg,type){
 }
 
 // ── HISTORIAL ─────────────────────────────────────────
-function diasVencimiento(due){
-  if(!due)return null;
-  const h=new Date();h.setHours(0,0,0,0);
-  return Math.round((new Date(due+'T00:00:00')-h)/(864e5));
-}
+function diasVenc(due){if(!due)return null;const h=new Date();h.setHours(0,0,0,0);return Math.round((new Date(due+'T00:00:00')-h)/864e5);}
 function renderInvoices(){
   const q=(document.getElementById('search-inv').value||'').toLowerCase();
   const st=document.getElementById('filter-status').value;
   const tb=document.getElementById('inv-tbody'),em=document.getElementById('inv-empty');
-  const f=invoices.filter(inv=>(inv.num+(inv.client.name||'')+(inv.client.commercial||'')+(inv.issuer?.commercial||'')+(inv.issuer?.name||'')).toLowerCase().includes(q)&&(!st||inv.status===st));
+  const f=invoices.filter(inv=>(inv.num+(inv.client.name||'')+(inv.client.commercial||'')+(inv.issuer?.name||'')).toLowerCase().includes(q)&&(!st||inv.status===st));
   if(!f.length){tb.innerHTML='';em.style.display='';return;}
   em.style.display='none';
   tb.innerHTML=f.map(inv=>{
-    const dias=diasVencimiento(inv.due);
-    let dueTxt=inv.due||'—';
+    const dias=diasVenc(inv.due);let dueTxt=inv.due||'—';
     if(inv.status==='Pendiente'&&dias!==null){
       if(dias<0)dueTxt=`<span style="color:var(--red);font-weight:600">${inv.due} (${Math.abs(dias)}d mora)</span>`;
       else if(dias<=7)dueTxt=`<span style="color:var(--amber);font-weight:600">${inv.due} (${dias}d)</span>`;
     }
     const iss=inv.issuer||{};
-    return`<tr>
-      <td><strong>${inv.num}</strong></td>
-      <td style="font-size:12px"><strong>${iss.commercial||iss.name||'—'}</strong>${iss.commercial?`<br><span style="color:var(--gray)">${iss.name}</span>`:''}</td>
-      <td>${inv.client.commercial||inv.client.name}${inv.client.commercial?`<br><small style="color:var(--gray)">${inv.client.name}</small>`:''}</td>
+    return`<tr><td><strong>${inv.num}</strong></td>
+      <td style="font-size:12px"><strong>${iss.commercial||iss.name||'—'}</strong></td>
+      <td>${inv.client.commercial||inv.client.name}</td>
       <td>${inv.date}</td><td>${dueTxt}</td>
       <td style="font-weight:600">${fmt(inv.total)}</td>
       <td><span class="badge ${inv.status==='Pagada'?'badge-paid':'badge-pend'}">${inv.status}</span></td>
@@ -878,51 +783,37 @@ function editInvoice(id){
   const inv=invoices.find(x=>x.id===id);if(!inv)return;
   editingId=id;goTab('nueva');
   document.getElementById('form-title').textContent='Editar Factura';
-  selectedIssuerId=inv.issuerId||issuers[0].id;
-  renderIssuerSelector();
-  document.getElementById('f-num').value=inv.num;
-  document.getElementById('f-date').value=inv.date;
-  document.getElementById('f-due').value=inv.due||'';
-  document.getElementById('f-cname').value=inv.client.name;
-  document.getElementById('f-ccommercial').value=inv.client.commercial||'';
-  document.getElementById('f-cnit').value=inv.client.nit||'';
-  document.getElementById('f-cemail').value=inv.client.email||'';
-  document.getElementById('f-cphone').value=inv.client.phone||'';
-  document.getElementById('f-caddr').value=inv.client.addr||'';
-  document.getElementById('f-status').value=inv.status;
-  document.getElementById('f-method').value=inv.method||'Transferencia bancaria';
-  document.getElementById('f-notes').value=inv.notes||'';
+  selectedIssuerId=inv.issuerId||issuers[0].id;renderIssuerSelector();
+  document.getElementById('f-num').value=inv.num;document.getElementById('f-date').value=inv.date;
+  document.getElementById('f-due').value=inv.due||'';document.getElementById('f-cname').value=inv.client.name;
+  document.getElementById('f-ccommercial').value=inv.client.commercial||'';document.getElementById('f-cnit').value=inv.client.nit||'';
+  document.getElementById('f-cemail').value=inv.client.email||'';document.getElementById('f-cphone').value=inv.client.phone||'';
+  document.getElementById('f-caddr').value=inv.client.addr||'';document.getElementById('f-status').value=inv.status;
+  document.getElementById('f-method').value=inv.method||'Transferencia bancaria';document.getElementById('f-notes').value=inv.notes||'';
   document.getElementById('client-search-input').value=inv.client.name;
   if(inv.ejsService)document.getElementById('ejs-service').value=inv.ejsService;
   if(inv.ejsTemplate)document.getElementById('ejs-template').value=inv.ejsTemplate;
   if(inv.ejsPubkey)document.getElementById('ejs-pubkey').value=inv.ejsPubkey;
-  items=JSON.parse(JSON.stringify(inv.items));
-  renderItems();
+  items=JSON.parse(JSON.stringify(inv.items));renderItems();
 }
 
 // ── PREVIEW ───────────────────────────────────────────
-function getIssuerForPreview(inv){
-  // Usa el issuer guardado en la factura (snapshot al momento de crear)
-  // Si no tiene, cae al company
-  return inv.issuer&&(inv.issuer.name||inv.issuer.commercial)?inv.issuer:company;
-}
+function getIssuer(inv){return inv.issuer&&(inv.issuer.name||inv.issuer.commercial)?inv.issuer:company;}
 function buildPreviewHTML(inv){
-  const co=getIssuerForPreview(inv);
-  const logo=company.logo;
+  const co=getIssuer(inv);const logo=company.logo;
   const logoHTML=logo?`<img src="${logo}" style="max-height:56px;max-width:120px;object-fit:contain;display:block;margin-bottom:6px"/>`:'';
   const rows=inv.items.map(it=>`<tr><td style="padding:7px 10px;border-bottom:1px solid #eee">${it.desc}</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center">${it.qty}</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:right">${fmt(it.price)}</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center">${it.iva}%</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:right;font-weight:600">${fmt(it.qty*it.price*(1+it.iva/100))}</td></tr>`).join('');
-  const clientDisplay=inv.client.commercial?`<strong>${inv.client.commercial}</strong><br><span style="font-size:11px;color:#555">${inv.client.name}</span>`:inv.client.name;
   const coLine=co.commercial?`<div style="font-size:16px;font-weight:700;color:#1a6db5">${co.commercial}</div><div style="font-size:11px;color:#555">${co.name||''}</div>`:`<div style="font-size:16px;font-weight:700;color:#1a6db5">${co.name||'Mi Empresa'}</div>`;
   const coInfo=[co.nit,co.addr,co.phone,co.email].filter(Boolean);
-  const footerText=co.footer||company.footer||'';
+  const clientDisplay=inv.client.commercial?`<strong>${inv.client.commercial}</strong><br><span style="font-size:11px;color:#555">${inv.client.name}</span>`:inv.client.name;
   return`<div style="font-family:system-ui,sans-serif;font-size:12px;line-height:1.5;color:#1a1a1a">
   <table style="width:100%;border-collapse:collapse;margin-bottom:20px"><tr>
     <td style="width:60%;vertical-align:top">${logoHTML}${coLine}<div style="font-size:11px;color:#777;margin-top:2px">${coInfo.join(' · ')}</div></td>
     <td style="width:40%;vertical-align:top;text-align:right"><div style="font-size:20px;font-weight:700;color:#aaa">FACTURA</div><div style="font-size:14px;font-weight:700;margin:2px 0">${inv.num}</div><div style="font-size:11px;color:#777">Fecha: ${inv.date}<br>Vence: ${inv.due||'—'}</div></td>
   </tr></table>
   <table style="width:100%;border-collapse:collapse;margin-bottom:16px;border:1px solid #e5e3dc"><tr>
-    <td style="width:55%;padding:10px 12px;vertical-align:top;font-size:11px"><div style="font-weight:700;font-size:10px;letter-spacing:.5px;color:#888;margin-bottom:4px">FACTURAR A:</div>${clientDisplay}<br>${inv.client.nit?`NIT: ${inv.client.nit}<br>`:''}${inv.client.addr?`${inv.client.addr}<br>`:''}<span style="color:#555">${[inv.client.email,inv.client.phone].filter(Boolean).join(' · ')}</span></td>
-    <td style="width:45%;padding:10px 12px;vertical-align:top;font-size:11px;border-left:1px solid #e5e3dc"><div style="font-weight:700;font-size:10px;letter-spacing:.5px;color:#888;margin-bottom:4px">PAGO</div><div>Método: ${inv.method||'—'}</div><div>Estado: <strong style="color:${inv.status==='Pagada'?'#3b6d11':'#854f0b'}">${inv.status}</strong></div></td>
+    <td style="width:55%;padding:10px 12px;vertical-align:top;font-size:11px"><div style="font-weight:700;font-size:10px;color:#888;margin-bottom:4px">FACTURAR A:</div>${clientDisplay}<br>${inv.client.nit?`NIT: ${inv.client.nit}<br>`:''}${inv.client.addr?`${inv.client.addr}<br>`:''}<span style="color:#555">${[inv.client.email,inv.client.phone].filter(Boolean).join(' · ')}</span></td>
+    <td style="width:45%;padding:10px 12px;vertical-align:top;font-size:11px;border-left:1px solid #e5e3dc"><div style="font-weight:700;font-size:10px;color:#888;margin-bottom:4px">PAGO</div><div>Método: ${inv.method||'—'}</div><div>Estado: <strong style="color:${inv.status==='Pagada'?'#3b6d11':'#854f0b'}">${inv.status}</strong></div></td>
   </tr></table>
   <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
     <thead><tr style="background:#1a6db5"><th style="padding:8px 10px;font-size:11px;text-align:left;color:#fff">Descripción</th><th style="padding:8px 10px;font-size:11px;text-align:center;color:#fff">Cant.</th><th style="padding:8px 10px;font-size:11px;text-align:right;color:#fff">Precio Unit.</th><th style="padding:8px 10px;font-size:11px;text-align:center;color:#fff">IVA</th><th style="padding:8px 10px;font-size:11px;text-align:right;color:#fff">Total</th></tr></thead>
@@ -936,10 +827,9 @@ function buildPreviewHTML(inv){
     </div>
   </div>
   ${inv.notes?`<div style="padding:10px 12px;background:#f7f7f4;border-radius:6px;font-size:11px;margin-bottom:12px"><strong>Notas:</strong> ${inv.notes}</div>`:''}
-  ${footerText?`<div style="text-align:center;font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:10px">${footerText}</div>`:''}
+  ${(co.footer||company.footer)?`<div style="text-align:center;font-size:10px;color:#aaa;border-top:1px solid #eee;padding-top:10px">${co.footer||company.footer}</div>`:''}
 </div>`;
 }
-
 function previewInvoice(){currentPreviewInv=getInvoiceData();document.getElementById('inv-preview').innerHTML=buildPreviewHTML(currentPreviewInv);document.getElementById('preview-modal').classList.add('open');}
 function previewById(id){currentPreviewInv=invoices.find(x=>x.id===id);if(!currentPreviewInv)return;document.getElementById('inv-preview').innerHTML=buildPreviewHTML(currentPreviewInv);document.getElementById('preview-modal').classList.add('open');}
 
@@ -953,8 +843,7 @@ function downloadPDF(){
   el.style.cssText='width:720px;background:#fff;padding:32px;font-family:Arial,sans-serif';
   html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false}).then(canvas=>{
     el.style.cssText=orig;
-    const {jsPDF}=window.jspdf;
-    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const{jsPDF}=window.jspdf;const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
     const W=210,M=10,imgW=W-M*2,imgH=canvas.height*imgW/canvas.width,pageH=297-M*2;
     let yPos=0;
     while(yPos<imgH){
@@ -971,45 +860,17 @@ function downloadPDF(){
 }
 
 // ── EMAIL ─────────────────────────────────────────────
-function buildEmailHTML(inv){
-  const co=getIssuerForPreview(inv);
-  const coLine=co.commercial?`<div style="font-size:18px;font-weight:700;color:#1a6db5">${co.commercial}</div><div style="font-size:12px;color:#555">${co.name||''}</div>`:`<div style="font-size:18px;font-weight:700;color:#1a6db5">${co.name||'Mi Empresa'}</div>`;
-  const coInfo=[co.nit,co.addr,co.phone,co.email].filter(Boolean).join(' · ');
-  const rows=inv.items.map(it=>`<tr><td style="padding:8px 10px;border-bottom:1px solid #eee;font-size:13px">${it.desc}</td><td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:center;font-size:13px">${it.qty}</td><td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:right;font-size:13px">${fmt(it.price)}</td><td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:center;font-size:13px">${it.iva}%</td><td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:right;font-size:13px;font-weight:600">${fmt(it.qty*it.price*(1+it.iva/100))}</td></tr>`).join('');
-  const clientDisplay=inv.client.commercial?`<strong>${inv.client.commercial}</strong><br><span style="font-size:12px;color:#555">${inv.client.name}</span>`:inv.client.name;
-  return`<div style="font-family:Arial,sans-serif;max-width:680px;margin:0 auto;background:#fff">
-  <div style="background:#1a6db5;padding:14px 24px"><div style="color:#fff;font-size:11px;opacity:.8">COMPROBANTE DE FACTURA</div></div>
-  <div style="padding:24px">
-    <table style="width:100%;border-collapse:collapse;margin-bottom:24px"><tr>
-      <td style="vertical-align:top;width:60%">${coLine}<div style="font-size:11px;color:#888;margin-top:4px">${coInfo}</div></td>
-      <td style="vertical-align:top;text-align:right;width:40%"><div style="font-size:22px;font-weight:700;color:#ccc">FACTURA</div><div style="font-size:16px;font-weight:700">${inv.num}</div><div style="font-size:12px;color:#888">Fecha: ${inv.date}${inv.due?'<br>Vence: '+inv.due:''}</div></td>
-    </tr></table>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;border:1px solid #e5e3dc"><tr>
-      <td style="width:55%;padding:12px 14px;vertical-align:top;font-size:12px;background:#f7f7f4"><div style="font-weight:700;font-size:10px;color:#888;margin-bottom:6px">FACTURAR A:</div>${clientDisplay}<br>${inv.client.nit?`NIT: ${inv.client.nit}<br>`:''}${inv.client.addr?`${inv.client.addr}<br>`:''}<span style="color:#555">${[inv.client.email,inv.client.phone].filter(Boolean).join(' · ')}</span></td>
-      <td style="width:45%;padding:12px 14px;vertical-align:top;font-size:12px;background:#f7f7f4;border-left:1px solid #e5e3dc"><div style="font-weight:700;font-size:10px;color:#888;margin-bottom:6px">PAGO</div><div>Método: ${inv.method}</div><div>Estado: <strong style="color:${inv.status==='Pagada'?'#3b6d11':'#854f0b'}">${inv.status}</strong></div></td>
-    </tr></table>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
-      <thead><tr style="background:#1a6db5"><th style="padding:9px 10px;font-size:12px;text-align:left;color:#fff">Descripción</th><th style="padding:9px 10px;font-size:12px;text-align:center;color:#fff">Cant.</th><th style="padding:9px 10px;font-size:12px;text-align:right;color:#fff">Precio Unit.</th><th style="padding:9px 10px;font-size:12px;text-align:center;color:#fff">IVA</th><th style="padding:9px 10px;font-size:12px;text-align:right;color:#fff">Total</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div style="display:flex;justify-content:flex-end;margin-bottom:20px">
-      <table style="min-width:240px;border-collapse:collapse;border:1px solid #e5e3dc">
-        <tr><td style="padding:6px 14px;font-size:12px;color:#666;border-bottom:1px solid #e5e3dc">Subtotal</td><td style="padding:6px 14px;font-size:12px;text-align:right;border-bottom:1px solid #e5e3dc">${fmt(inv.sub)}</td></tr>
-        <tr><td style="padding:6px 14px;font-size:12px;color:#666;border-bottom:1px solid #e5e3dc">IVA</td><td style="padding:6px 14px;font-size:12px;text-align:right;border-bottom:1px solid #e5e3dc">${fmt(inv.iva)}</td></tr>
-        <tr style="background:#1a6db5"><td style="padding:9px 14px;font-size:14px;font-weight:700;color:#fff">TOTAL</td><td style="padding:9px 14px;font-size:14px;font-weight:700;color:#fff;text-align:right">${fmt(inv.total)}</td></tr>
-      </table>
-    </div>
-    ${inv.notes?`<div style="padding:12px 14px;background:#f7f7f4;border-radius:6px;font-size:12px;margin-bottom:16px;border-left:3px solid #1a6db5"><strong>Notas:</strong> ${inv.notes}</div>`:''}
-    ${co.footer?`<div style="text-align:center;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:14px">${co.footer}</div>`:''}
-  </div></div>`;
-}
 function sendEmail(){
   const inv=currentPreviewInv;if(!inv)return;
   if(!inv.ejsService||!inv.ejsTemplate||!inv.ejsPubkey){alert('Completa las credenciales de EmailJS.');return;}
   if(!inv.client.email){alert('El cliente no tiene email.');return;}
+  const co=getIssuer(inv);
+  const coLine=co.commercial?`<div style="font-size:18px;font-weight:700;color:#1a6db5">${co.commercial}</div>`:`<div style="font-size:18px;font-weight:700;color:#1a6db5">${co.name||'Mi Empresa'}</div>`;
+  const rows=inv.items.map(it=>`<tr><td style="padding:8px;border-bottom:1px solid #eee">${it.desc}</td><td style="padding:8px;text-align:center">${it.qty}</td><td style="padding:8px;text-align:right">${fmt(it.price)}</td><td style="padding:8px;text-align:center">${it.iva}%</td><td style="padding:8px;text-align:right;font-weight:600">${fmt(it.qty*it.price*(1+it.iva/100))}</td></tr>`).join('');
+  const html=`<div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto">${coLine}<p>Factura: <b>${inv.num}</b> | Total: <b>${fmt(inv.total)}</b><br>Cliente: ${inv.client.name} | Estado: ${inv.status}</p><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#1a6db5;color:#fff"><th style="padding:8px">Descripción</th><th>Cant.</th><th>Precio</th><th>IVA</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table>${inv.notes?`<p><b>Notas:</b> ${inv.notes}</p>`:''}</div>`;
   const doSend=()=>{
     window.emailjs.init({publicKey:inv.ejsPubkey});
-    window.emailjs.send(inv.ejsService,inv.ejsTemplate,{to_email:inv.client.email,invoice_number:inv.num,client_name:inv.client.commercial||inv.client.name,total:fmt(inv.total),date:inv.date,status:inv.status,method:inv.method,invoice_html:buildEmailHTML(inv)})
+    window.emailjs.send(inv.ejsService,inv.ejsTemplate,{to_email:inv.client.email,invoice_number:inv.num,client_name:inv.client.commercial||inv.client.name,total:fmt(inv.total),date:inv.date,status:inv.status,method:inv.method,invoice_html:html})
     .then(()=>alert('✅ Correo enviado a '+inv.client.email),err=>alert('Error: '+JSON.stringify(err)));
   };
   if(window.emailjs)doSend();
@@ -1017,35 +878,23 @@ function sendEmail(){
 }
 
 // ── ABONOS ────────────────────────────────────────────
-let currentAbonoInvId=null;
-
 function totalAbonado(inv){return(inv.abonos||[]).reduce((s,a)=>s+a.monto,0);}
 function saldoPendiente(inv){return inv.total-totalAbonado(inv);}
-
 function openAbonoModal(id){
-  const inv=invoices.find(x=>x.id===id);
-  if(!inv){alert('Factura no encontrada.');return;}
-  const modal=document.getElementById('abono-modal');
-  if(!modal){alert('Error: modal no encontrado.');return;}
+  const inv=invoices.find(x=>x.id===id);if(!inv){alert('Factura no encontrada.');return;}
   currentAbonoInvId=id;
-  const abonado=totalAbonado(inv);
-  const saldo=saldoPendiente(inv);
+  const ab=totalAbonado(inv),sl=saldoPendiente(inv),pct=Math.min(100,Math.round(ab/inv.total*100));
   document.getElementById('abono-inv-info').innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
       <div><div style="font-size:11px;color:var(--gray)">Total Factura</div><div style="font-weight:700;font-size:14px">${fmt(inv.total)}</div></div>
-      <div><div style="font-size:11px;color:var(--gray)">Total Abonado</div><div style="font-weight:700;font-size:14px;color:var(--green)">${fmt(abonado)}</div></div>
-      <div><div style="font-size:11px;color:var(--gray)">Saldo Pendiente</div><div style="font-weight:700;font-size:14px;color:var(--red)">${fmt(saldo)}</div></div>
+      <div><div style="font-size:11px;color:var(--gray)">Total Abonado</div><div style="font-weight:700;font-size:14px;color:var(--green)">${fmt(ab)}</div></div>
+      <div><div style="font-size:11px;color:var(--gray)">Saldo Pendiente</div><div style="font-weight:700;font-size:14px;color:var(--red)">${fmt(sl)}</div></div>
     </div>
-    <div style="margin-top:10px;background:#e5e3dc;border-radius:20px;height:8px;overflow:hidden">
-      <div style="height:100%;background:var(--green);width:${Math.min(100,Math.round(abonado/inv.total*100))}%;transition:width .3s"></div>
-    </div>
-    <div style="font-size:11px;color:var(--gray);text-align:center;margin-top:4px">${Math.min(100,Math.round(abonado/inv.total*100))}% pagado · Factura <strong>${inv.num}</strong> · ${inv.client.commercial||inv.client.name}</div>`;
-  document.getElementById('abono-monto').value='';
-  document.getElementById('abono-monto').max=saldo;
+    <div style="margin-top:10px;background:#e5e3dc;border-radius:20px;height:8px;overflow:hidden"><div style="height:100%;background:var(--green);width:${pct}%"></div></div>
+    <div style="font-size:11px;color:var(--gray);text-align:center;margin-top:4px">${pct}% pagado · Factura <strong>${inv.num}</strong> · ${inv.client.commercial||inv.client.name}</div>`;
+  document.getElementById('abono-monto').value='';document.getElementById('abono-monto').max=sl;
   document.getElementById('abono-fecha').value=new Date().toISOString().split('T')[0];
-  document.getElementById('abono-method').value='Transferencia bancaria';
-  document.getElementById('abono-nota').value='';
-  // Historial
+  document.getElementById('abono-method').value='Transferencia bancaria';document.getElementById('abono-nota').value='';
   const abonos=inv.abonos||[];
   document.getElementById('abono-historial').innerHTML=abonos.length?`
     <div style="font-size:12px;font-weight:600;color:var(--gray);margin-bottom:8px">Historial de Abonos</div>
@@ -1054,38 +903,27 @@ function openAbonoModal(id){
         <div><div style="font-weight:600">${fmt(a.monto)}</div><div style="color:var(--gray);font-size:11px">${a.fecha} · ${a.method}${a.nota?' · '+a.nota:''}</div></div>
         <button class="btn btn-sm btn-danger" onclick="eliminarAbono('${id}',${i})">🗑</button>
       </div>`).join('')}
-    </div>`:'<div style="font-size:12px;color:var(--gray);text-align:center;padding:12px">No hay abonos registrados aún.</div>';
+    </div>`:'<div style="font-size:12px;color:var(--gray);text-align:center;padding:12px">No hay abonos aún.</div>';
   document.getElementById('abono-modal').classList.add('open');
 }
-
 function closeAbonoModal(){document.getElementById('abono-modal').classList.remove('open');currentAbonoInvId=null;}
-
 function guardarAbono(){
   const inv=invoices.find(x=>x.id===currentAbonoInvId);if(!inv)return;
   const monto=+document.getElementById('abono-monto').value;
-  const saldo=saldoPendiente(inv);
+  const sl=saldoPendiente(inv);
   if(!monto||monto<=0){alert('Ingresa un monto válido.');return;}
-  if(monto>saldo){alert(`El abono (${fmt(monto)}) supera el saldo pendiente (${fmt(saldo)}).`);return;}
+  if(monto>sl){alert(`El abono supera el saldo (${fmt(sl)}).`);return;}
   if(!inv.abonos)inv.abonos=[];
   inv.abonos.push({monto,fecha:document.getElementById('abono-fecha').value,method:document.getElementById('abono-method').value,nota:document.getElementById('abono-nota').value.trim()});
-  // Si el saldo queda en 0, marcar como pagada
-  if(saldoPendiente(inv)<=0){inv.status='Pagada';}
-  save();
-  openAbonoModal(currentAbonoInvId); // refrescar modal
-  renderCartera();
-  renderInvoices();
+  if(saldoPendiente(inv)<=0)inv.status='Pagada';
+  save();openAbonoModal(currentAbonoInvId);renderCartera();renderInvoices();
 }
-
 function eliminarAbono(invId,idx){
   if(!confirm('¿Eliminar este abono?'))return;
   const inv=invoices.find(x=>x.id===invId);if(!inv||!inv.abonos)return;
   inv.abonos.splice(idx,1);
-  // Si se elimina un abono y la factura estaba pagada, volver a pendiente
   if(inv.status==='Pagada'&&saldoPendiente(inv)>0)inv.status='Pendiente';
-  save();
-  openAbonoModal(invId);
-  renderCartera();
-  renderInvoices();
+  save();openAbonoModal(invId);renderCartera();renderInvoices();
 }
 
 // ── CARTERA ───────────────────────────────────────────
@@ -1094,47 +932,25 @@ function renderCartera(){
   const pending=invoices.filter(inv=>inv.status==='Pendiente');
   const filtered=pending.filter(inv=>(inv.client.name||'').toLowerCase().includes(q)||(inv.client.commercial||'').toLowerCase().includes(q));
   const totalDeuda=pending.reduce((s,i)=>s+saldoPendiente(i),0);
-  const enMora=pending.filter(i=>{const d=diasVencimiento(i.due);return d!==null&&d<0;});
-  const totalMora=enMora.reduce((s,i)=>s+saldoPendiente(i),0);
+  const enMora=pending.filter(i=>{const d=diasVenc(i.due);return d!==null&&d<0;});
   document.getElementById('cartera-stats').innerHTML=`
     <div class="stat-card blue"><div class="lbl">Saldo Total Pendiente</div><div class="val">${fmt(totalDeuda)}</div><div style="font-size:11px;color:var(--gray);margin-top:4px">${pending.length} factura(s)</div></div>
-    <div class="stat-card red"><div class="lbl">En Mora</div><div class="val">${fmt(totalMora)}</div><div style="font-size:11px;color:var(--gray);margin-top:4px">${enMora.length} factura(s) vencida(s)</div></div>
-    <div class="stat-card amber"><div class="lbl">Clientes con Deuda</div><div class="val">${new Set(pending.map(i=>i.client.name)).size}</div><div style="font-size:11px;color:var(--gray);margin-top:4px">clientes activos</div></div>`;
-  const list=document.getElementById('cartera-list');
-  const empty=document.getElementById('cartera-empty');
+    <div class="stat-card red"><div class="lbl">En Mora</div><div class="val">${fmt(enMora.reduce((s,i)=>s+saldoPendiente(i),0))}</div><div style="font-size:11px;color:var(--gray);margin-top:4px">${enMora.length} factura(s)</div></div>
+    <div class="stat-card amber"><div class="lbl">Clientes con Deuda</div><div class="val">${new Set(pending.map(i=>i.client.name)).size}</div></div>`;
+  const list=document.getElementById('cartera-list'),empty=document.getElementById('cartera-empty');
   if(!filtered.length){list.innerHTML='';empty.style.display='';return;}
   empty.style.display='none';
   const byClient={};
-  filtered.forEach(inv=>{
-    const key=inv.client.name;
-    if(!byClient[key])byClient[key]={name:inv.client.name,commercial:inv.client.commercial,invoices:[]};
-    byClient[key].invoices.push(inv);
-  });
+  filtered.forEach(inv=>{const k=inv.client.name;if(!byClient[k])byClient[k]={name:inv.client.name,commercial:inv.client.commercial,invoices:[]};byClient[k].invoices.push(inv);});
   list.innerHTML=Object.values(byClient).map((c,ci)=>{
     const totalC=c.invoices.reduce((s,i)=>s+saldoPendiente(i),0);
     const rows=c.invoices.map(inv=>{
-      const dias=diasVencimiento(inv.due);
-      let badge='',diasTxt='';
-      if(dias===null){badge='badge-pend';diasTxt='Sin vencimiento';}
-      else if(dias<0){badge='badge-late';diasTxt=`Vencida hace ${Math.abs(dias)} día(s)`;}
-      else if(dias===0){badge='badge-late';diasTxt='Vence hoy';}
-      else if(dias<=7){badge='badge-pend';diasTxt=`Vence en ${dias} día(s)`;}
-      else{badge='badge-pend';diasTxt=`Vence: ${inv.due}`;}
-      const iss=inv.issuer||{};
-      const abonado=totalAbonado(inv);
-      const saldo=saldoPendiente(inv);
-      const pct=Math.min(100,Math.round(abonado/inv.total*100));
-      return`<tr>
-        <td><strong>${inv.num}</strong></td>
-        <td style="font-size:12px">${iss.commercial||iss.name||'—'}</td>
-        <td>${inv.date}</td>
+      const dias=diasVenc(inv.due);let badge='badge-pend',diasTxt='Sin vencimiento';
+      if(dias!==null){if(dias<0){badge='badge-late';diasTxt=`Vencida hace ${Math.abs(dias)} día(s)`;}else if(dias===0){badge='badge-late';diasTxt='Vence hoy';}else if(dias<=7){diasTxt=`Vence en ${dias} día(s)`;}else{diasTxt=`Vence: ${inv.due}`;}}
+      const ab=totalAbonado(inv),sl=saldoPendiente(inv),pct=Math.min(100,Math.round(ab/inv.total*100));
+      return`<tr><td><strong>${inv.num}</strong></td><td style="font-size:12px">${inv.issuer?.commercial||inv.issuer?.name||'—'}</td><td>${inv.date}</td>
         <td><span class="badge ${badge}">${diasTxt}</span></td>
-        <td style="font-size:12px">
-          <div style="font-weight:600">${fmt(inv.total)}</div>
-          ${abonado>0?`<div style="color:var(--green);font-size:11px">Abonado: ${fmt(abonado)}</div>
-          <div style="color:var(--red);font-size:11px;font-weight:600">Saldo: ${fmt(saldo)}</div>
-          <div style="background:#e5e3dc;border-radius:20px;height:5px;margin-top:3px;overflow:hidden"><div style="height:100%;background:var(--green);width:${pct}%"></div></div>`:''}
-        </td>
+        <td style="font-size:12px"><div style="font-weight:600">${fmt(inv.total)}</div>${ab>0?`<div style="color:var(--green);font-size:11px">Abonado: ${fmt(ab)}</div><div style="color:var(--red);font-size:11px;font-weight:600">Saldo: ${fmt(sl)}</div><div style="background:#e5e3dc;border-radius:20px;height:5px;margin-top:3px;overflow:hidden"><div style="height:100%;background:var(--green);width:${pct}%"></div></div>`:''}</td>
         <td><div class="flex" style="gap:4px;flex-wrap:wrap">
           <button class="btn btn-sm" style="color:var(--blue);border-color:var(--blue)" onclick="event.stopPropagation();openAbonoModal('${inv.id}')">💰 Abonar</button>
           <button class="btn btn-sm btn-success" onclick="marcarPagada('${inv.id}')">✓ Pagar</button>
@@ -1142,17 +958,17 @@ function renderCartera(){
         </div></td></tr>`;
     }).join('');
     return`<div class="cartera-client">
-      <div class="cartera-client-head" onclick="toggleCarteraClient(${ci})">
-        <div><strong>${c.commercial||c.name}</strong>${c.commercial?`<span style="font-size:12px;color:var(--gray);margin-left:8px">${c.name}</span>`:''}<span style="font-size:12px;color:var(--gray);margin-left:8px">${c.invoices.length} factura(s)</span></div>
-        <div class="flex" style="gap:12px"><span style="font-weight:700;color:var(--red)">${fmt(totalC)}</span><span id="arrow-${ci}" style="color:var(--gray)">▼</span></div>
+      <div class="cartera-client-head" onclick="toggleCC(${ci})">
+        <div><strong>${c.commercial||c.name}</strong><span style="font-size:12px;color:var(--gray);margin-left:8px">${c.invoices.length} factura(s)</span></div>
+        <div class="flex"><span style="font-weight:700;color:var(--red)">${fmt(totalC)}</span><span id="arr-${ci}">▼</span></div>
       </div>
-      <div class="cartera-client-body" id="cartera-body-${ci}">
-        <table><thead><tr><th>#</th><th>Facturador</th><th>Fecha</th><th>Vencimiento</th><th>Valor / Abonos</th><th>Acciones</th></tr></thead>
+      <div class="cartera-client-body" id="ccb-${ci}">
+        <table><thead><tr><th>#</th><th>Facturador</th><th>Fecha</th><th>Vencimiento</th><th>Valor/Abonos</th><th>Acciones</th></tr></thead>
         <tbody>${rows}</tbody></table>
       </div></div>`;
   }).join('');
 }
-function toggleCarteraClient(ci){const b=document.getElementById('cartera-body-'+ci);const a=document.getElementById('arrow-'+ci);a.textContent=b.classList.toggle('open')?'▲':'▼';}
+function toggleCC(ci){const b=document.getElementById('ccb-'+ci);const a=document.getElementById('arr-'+ci);a.textContent=b.classList.toggle('open')?'▲':'▼';}
 function marcarPagada(id){if(!confirm('¿Marcar como Pagada?'))return;const inv=invoices.find(x=>x.id===id);if(inv){inv.status='Pagada';save();renderCartera();renderInvoices();}}
 
 // ── CLIENTES ──────────────────────────────────────────
@@ -1175,8 +991,8 @@ function openClientModal(idx){
 function closeClientModal(){document.getElementById('client-modal').classList.remove('open');editingClientIdx=null;}
 function saveClient(){
   const name=document.getElementById('m-name').value.trim();if(!name){alert('El nombre es requerido.');return;}
-  const data={name,commercial:document.getElementById('m-commercial').value.trim(),nit:document.getElementById('m-nit').value.trim(),email:document.getElementById('m-email').value.trim(),phone:document.getElementById('m-phone').value.trim(),addr:document.getElementById('m-addr').value.trim()};
-  if(editingClientIdx!==null)clients[editingClientIdx]=data;else clients.push(data);
+  const d={name,commercial:document.getElementById('m-commercial').value.trim(),nit:document.getElementById('m-nit').value.trim(),email:document.getElementById('m-email').value.trim(),phone:document.getElementById('m-phone').value.trim(),addr:document.getElementById('m-addr').value.trim()};
+  if(editingClientIdx!==null)clients[editingClientIdx]=d;else clients.push(d);
   save();closeClientModal();renderClients();
 }
 function deleteClient(i){if(confirm('¿Eliminar?')){clients.splice(i,1);save();renderClients();}}
@@ -1188,10 +1004,7 @@ function renderProds(){
   const f=products.map((p,i)=>({...p,_i:i})).filter(p=>!q||(p.name||'').toLowerCase().includes(q)||(p.code||'').toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q));
   if(!f.length){tb.innerHTML='';em.style.display='';return;}
   em.style.display='none';
-  tb.innerHTML=f.map(p=>`<tr>
-    <td>${p.code?`<span class="prod-tag">${p.code}</span>`:'—'}</td>
-    <td><strong>${p.name}</strong></td><td>${p.cat||'—'}</td>
-    <td style="font-weight:600">${fmt(p.price)}</td><td>${p.iva}%</td>
+  tb.innerHTML=f.map(p=>`<tr><td>${p.code?`<span class="prod-tag">${p.code}</span>`:'—'}</td><td><strong>${p.name}</strong></td><td>${p.cat||'—'}</td><td style="font-weight:600">${fmt(p.price)}</td><td>${p.iva}%</td>
     <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--gray)">${p.desc||'—'}</td>
     <td><div class="flex" style="gap:4px"><button class="btn btn-sm" onclick="openProdModal(${p._i})">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteProd(${p._i})">🗑</button></div></td></tr>`).join('');
 }
@@ -1205,8 +1018,8 @@ function openProdModal(idx){
 function closeProdModal(){document.getElementById('prod-modal').classList.remove('open');editingProdIdx=null;}
 function saveProd(){
   const name=document.getElementById('p-name').value.trim();if(!name){alert('El nombre es requerido.');return;}
-  const data={id:editingProdIdx!==null?products[editingProdIdx].id:Date.now().toString(),code:document.getElementById('p-code').value.trim(),cat:document.getElementById('p-cat').value.trim(),name,desc:document.getElementById('p-desc').value.trim(),price:+document.getElementById('p-price').value,iva:+document.getElementById('p-iva').value,unit:document.getElementById('p-unit').value};
-  if(editingProdIdx!==null)products[editingProdIdx]=data;else products.push(data);
+  const d={id:editingProdIdx!==null?products[editingProdIdx].id:Date.now().toString(),code:document.getElementById('p-code').value.trim(),cat:document.getElementById('p-cat').value.trim(),name,desc:document.getElementById('p-desc').value.trim(),price:+document.getElementById('p-price').value,iva:+document.getElementById('p-iva').value,unit:document.getElementById('p-unit').value};
+  if(editingProdIdx!==null)products[editingProdIdx]=d;else products.push(d);
   save();closeProdModal();renderProds();
 }
 function deleteProd(i){if(confirm('¿Eliminar?')){products.splice(i,1);save();renderProds();}}
