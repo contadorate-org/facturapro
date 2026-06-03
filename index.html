@@ -118,7 +118,8 @@ tr:hover td{background:#fafaf8}
 <div id="app-screen">
 <nav>
   <div class="logo">📄 FacturaPro</div>
-  <div class="tab active" onclick="goTab('facturas')">Facturas</div>
+  <div class="tab" onclick="goTab('dashboard')">📊 Dashboard</div>
+  <div class="tab" onclick="goTab('facturas')">Facturas</div>
   <div class="tab" onclick="goTab('nueva')">Nueva Factura</div>
   <div class="tab" onclick="goTab('cartera')">Cartera</div>
   <div class="tab" onclick="goTab('clientes')">Clientes</div>
@@ -132,6 +133,57 @@ tr:hover td{background:#fafaf8}
   </div>
 </nav>
 <div class="content">
+
+<div id="page-dashboard" class="page">
+  <div class="flex flex-between" style="margin-bottom:20px">
+    <div class="section-title" style="margin:0">📊 Dashboard</div>
+    <div class="flex" style="gap:8px">
+      <select id="dash-year" onchange="renderDashboard()" style="width:auto">
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026" selected>2026</option>
+      </select>
+      <button class="btn" onclick="renderDashboard()">🔄 Actualizar</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div id="dash-kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px"></div>
+
+  <!-- Flujo de caja mensual -->
+  <div class="card">
+    <div class="flex flex-between" style="margin-bottom:16px">
+      <h2 style="margin:0">💰 Flujo de Caja Mensual</h2>
+      <select id="dash-month-filter" onchange="renderDashboard()" style="width:auto">
+        <option value="-1">Todos los meses</option>
+        <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option>
+        <option value="3">Abril</option><option value="4">Mayo</option><option value="5">Junio</option>
+        <option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option>
+        <option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+      </select>
+    </div>
+    <div id="dash-cashflow-chart" style="overflow-x:auto;margin-bottom:16px"></div>
+    <div id="dash-cashflow-table" style="overflow-x:auto"></div>
+  </div>
+
+  <!-- Desglose por facturador y método de pago -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <h2>🏢 Por Facturador</h2>
+      <div id="dash-by-issuer"></div>
+    </div>
+    <div class="card">
+      <h2>💳 Por Método de Pago</h2>
+      <div id="dash-by-payment"></div>
+    </div>
+  </div>
+
+  <!-- Top clientes -->
+  <div class="card">
+    <h2>👥 Top Clientes</h2>
+    <div id="dash-by-client" style="overflow-x:auto"></div>
+  </div>
+</div>
 
 <div id="page-facturas" class="page active">
   <div class="flex flex-between" style="margin-bottom:16px">
@@ -475,7 +527,21 @@ async function doLogin(){
       document.getElementById('login-screen').style.display='none';
       document.getElementById('app-screen').style.display='block';
       document.getElementById('nav-username').textContent='👤 '+(data.full_name||data.username);
-      renderInvoices();
+      // ── PING AUTOMÁTICO (mantiene Supabase activo) ────────
+function _startPing(){
+  // Ping cada 4 días (345600000 ms) para evitar pausa por inactividad
+  async function ping(){
+    try{
+      await _SB.from('fp_users').select('id').limit(1);
+      console.log('✅ Ping Supabase:', new Date().toLocaleString());
+    }catch(e){console.log('Ping error:',e);}
+  }
+  ping(); // ping inmediato al cargar
+  setInterval(ping, 345600000); // cada 4 días
+}
+_startPing();
+
+renderInvoices();
     }
   }catch(e){err.style.display='block';err.textContent='Error: '+e.message;console.error(e);}
   btn.textContent='Ingresar';btn.disabled=false;
@@ -589,11 +655,208 @@ function importarDatos(e){
   r.readAsText(file);
 }
 
-// ── NAV ───────────────────────────────────────────────
+// ── DASHBOARD ─────────────────────────────────────────
+const MESES=['Enero','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+function renderDashboard(){
+  const year=+document.getElementById('dash-year').value;
+  const mFilter=+document.getElementById('dash-month-filter').value;
+
+  // Filtrar facturas del año
+  const invYear=invoices.filter(inv=>{
+    const y=inv.date?new Date(inv.date).getFullYear():0;
+    return y===year;
+  });
+
+  // Totales generales
+  const totalFacturado=invYear.reduce((s,i)=>s+i.total,0);
+  const totalCobrado=invYear.reduce((s,i)=>s+(i.status==='Pagada'?i.total:totalAbonado(i)),0);
+  const totalPendiente=invYear.reduce((s,i)=>s+(i.status==='Pendiente'?saldoPendiente(i):0),0);
+  const totalClientes=new Set(invYear.map(i=>i.client.name)).size;
+  const totalFacturas=invYear.length;
+  const pagadas=invYear.filter(i=>i.status==='Pagada').length;
+
+  // KPIs
+  document.getElementById('dash-kpis').innerHTML=`
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;border-top:3px solid var(--blue)">
+      <div style="font-size:11px;color:var(--gray);font-weight:500;margin-bottom:6px">💵 Total Facturado</div>
+      <div style="font-size:22px;font-weight:700;color:var(--blue)">${fmt(totalFacturado)}</div>
+      <div style="font-size:11px;color:var(--gray);margin-top:4px">${totalFacturas} facturas</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;border-top:3px solid var(--green)">
+      <div style="font-size:11px;color:var(--gray);font-weight:500;margin-bottom:6px">✅ Total Cobrado</div>
+      <div style="font-size:22px;font-weight:700;color:var(--green)">${fmt(totalCobrado)}</div>
+      <div style="font-size:11px;color:var(--gray);margin-top:4px">${pagadas} facturas pagadas</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;border-top:3px solid var(--red)">
+      <div style="font-size:11px;color:var(--gray);font-weight:500;margin-bottom:6px">⏳ Por Cobrar</div>
+      <div style="font-size:22px;font-weight:700;color:var(--red)">${fmt(totalPendiente)}</div>
+      <div style="font-size:11px;color:var(--gray);margin-top:4px">${invYear.filter(i=>i.status==='Pendiente').length} pendientes</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;border-top:3px solid var(--amber)">
+      <div style="font-size:11px;color:var(--gray);font-weight:500;margin-bottom:6px">👥 Clientes Activos</div>
+      <div style="font-size:22px;font-weight:700;color:var(--amber)">${totalClientes}</div>
+      <div style="font-size:11px;color:var(--gray);margin-top:4px">${clients.length} total registrados</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;border-top:3px solid #7c3aed">
+      <div style="font-size:11px;color:var(--gray);font-weight:500;margin-bottom:6px">📈 Tasa de Cobro</div>
+      <div style="font-size:22px;font-weight:700;color:#7c3aed">${totalFacturado>0?Math.round(totalCobrado/totalFacturado*100):0}%</div>
+      <div style="font-size:11px;color:var(--gray);margin-top:4px">del total facturado</div>
+    </div>`;
+
+  // Flujo de caja mensual
+  const meses=MESES.map((_,m)=>{
+    const mInv=invYear.filter(i=>new Date(i.date).getMonth()===m);
+    const cobrado=mInv.reduce((s,i)=>s+(i.status==='Pagada'?i.total:totalAbonado(i)),0);
+    const pendiente=mInv.reduce((s,i)=>s+(i.status==='Pendiente'?saldoPendiente(i):0),0);
+    const facturado=mInv.reduce((s,i)=>s+i.total,0);
+    return{m,nombre:MESES[m],facturado,cobrado,pendiente,count:mInv.length};
+  }).filter(d=>mFilter===-1?d.facturado>0:d.m===+mFilter||d.facturado>0);
+
+  // Gráfica de barras SVG
+  const maxVal=Math.max(...meses.map(d=>d.facturado),1);
+  const chartH=180,barW=40,gap=16,padL=60,padB=30;
+  const totalW=meses.length*(barW*2+gap)+padL+20;
+  const bars=meses.map((d,i)=>{
+    const x=padL+i*(barW*2+gap);
+    const h1=Math.round((d.cobrado/maxVal)*(chartH-padB));
+    const h2=Math.round((d.pendiente/maxVal)*(chartH-padB));
+    const y1=chartH-padB-h1,y2=chartH-padB-h2;
+    return`<rect x="${x}" y="${y1}" width="${barW}" height="${h1}" fill="#3b6d11" rx="3" opacity="0.85">
+      <title>Cobrado ${d.nombre}: ${fmt(d.cobrado)}</title></rect>
+    <rect x="${x+barW+2}" y="${y2}" width="${barW}" height="${h2}" fill="#a32d2d" rx="3" opacity="0.75">
+      <title>Pendiente ${d.nombre}: ${fmt(d.pendiente)}</title></rect>
+    <text x="${x+barW}" y="${chartH-padB+14}" text-anchor="middle" font-size="10" fill="#5f5e5a">${d.nombre.substring(0,3)}</text>`;
+  }).join('');
+  const gridLines=[0.25,0.5,0.75,1].map(p=>{
+    const y=Math.round((chartH-padB)*(1-p));
+    const val=Math.round(maxVal*p);
+    return`<line x1="${padL}" y1="${y}" x2="${totalW}" y2="${y}" stroke="#e0ddd6" stroke-width="1"/>
+    <text x="${padL-4}" y="${y+4}" text-anchor="end" font-size="9" fill="#94a3b8">${val>=1000000?(val/1000000).toFixed(1)+'M':val>=1000?(val/1000).toFixed(0)+'K':val}</text>`;
+  }).join('');
+
+  document.getElementById('dash-cashflow-chart').innerHTML=`
+    <div style="display:flex;gap:16px;margin-bottom:10px;font-size:12px">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;background:#3b6d11;border-radius:2px;display:inline-block"></span>Cobrado</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;background:#a32d2d;border-radius:2px;display:inline-block"></span>Pendiente</span>
+    </div>
+    <svg width="${Math.max(totalW,400)}" height="${chartH}" style="overflow:visible">
+      ${gridLines}
+      <line x1="${padL}" y1="0" x2="${padL}" y2="${chartH-padB}" stroke="#e0ddd6" stroke-width="1"/>
+      <line x1="${padL}" y1="${chartH-padB}" x2="${totalW}" y2="${chartH-padB}" stroke="#e0ddd6" stroke-width="1"/>
+      ${bars}
+    </svg>`;
+
+  // Tabla mensual
+  const filas=meses.map(d=>`<tr>
+    <td><strong>${d.nombre}</strong></td>
+    <td style="font-weight:600">${fmt(d.facturado)}</td>
+    <td style="color:var(--green);font-weight:600">${fmt(d.cobrado)}</td>
+    <td style="color:var(--red);font-weight:600">${fmt(d.pendiente)}</td>
+    <td style="color:var(--gray)">${d.count}</td>
+    <td>
+      <div style="background:#e5e3dc;border-radius:20px;height:8px;overflow:hidden;min-width:80px">
+        <div style="height:100%;background:var(--green);width:${d.facturado>0?Math.round(d.cobrado/d.facturado*100):0}%"></div>
+      </div>
+      <div style="font-size:10px;color:var(--gray);margin-top:2px">${d.facturado>0?Math.round(d.cobrado/d.facturado*100):0}% cobrado</div>
+    </td>
+  </tr>`).join('');
+  const totRow=meses.reduce((acc,d)=>({f:acc.f+d.facturado,c:acc.c+d.cobrado,p:acc.p+d.pendiente,n:acc.n+d.count}),{f:0,c:0,p:0,n:0});
+  document.getElementById('dash-cashflow-table').innerHTML=meses.length?`
+    <table><thead><tr><th>Mes</th><th>Facturado</th><th>Cobrado</th><th>Pendiente</th><th>Facturas</th><th>Avance</th></tr></thead>
+    <tbody>${filas}</tbody>
+    <tfoot><tr style="background:var(--gray-l);font-weight:700">
+      <td>TOTAL</td><td>${fmt(totRow.f)}</td><td style="color:var(--green)">${fmt(totRow.c)}</td><td style="color:var(--red)">${fmt(totRow.p)}</td><td>${totRow.n}</td><td></td>
+    </tr></tfoot></table>`:'<div style="text-align:center;padding:20px;color:var(--gray)">Sin datos para este período.</div>';
+
+  // Por facturador
+  const byIssuer={};
+  invYear.forEach(inv=>{
+    const k=inv.issuer?.commercial||inv.issuer?.name||'Sin facturador';
+    if(!byIssuer[k])byIssuer[k]={total:0,cobrado:0,count:0};
+    byIssuer[k].total+=inv.total;
+    byIssuer[k].cobrado+=inv.status==='Pagada'?inv.total:totalAbonado(inv);
+    byIssuer[k].count++;
+  });
+  const maxIssuer=Math.max(...Object.values(byIssuer).map(v=>v.total),1);
+  document.getElementById('dash-by-issuer').innerHTML=Object.entries(byIssuer).length?
+    Object.entries(byIssuer).sort((a,b)=>b[1].total-a[1].total).map(([k,v])=>`
+    <div style="margin-bottom:12px">
+      <div class="flex flex-between" style="font-size:13px;margin-bottom:4px">
+        <span style="font-weight:500">${k}</span>
+        <span style="font-weight:700">${fmt(v.total)}</span>
+      </div>
+      <div style="background:#e5e3dc;border-radius:20px;height:8px;overflow:hidden">
+        <div style="height:100%;background:var(--blue);width:${Math.round(v.total/maxIssuer*100)}%"></div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);margin-top:2px">${v.count} facturas · Cobrado: ${fmt(v.cobrado)}</div>
+    </div>`).join(''):'<div style="text-align:center;padding:20px;color:var(--gray)">Sin datos.</div>';
+
+  // Por método de pago
+  const byPayment={};
+  invYear.filter(i=>i.status==='Pagada').forEach(inv=>{
+    const k=inv.method||'No especificado';
+    if(!byPayment[k])byPayment[k]={total:0,count:0};
+    byPayment[k].total+=inv.total;byPayment[k].count++;
+  });
+  // Abonos también
+  invYear.forEach(inv=>{
+    (inv.abonos||[]).forEach(a=>{
+      const k=a.method||'No especificado';
+      if(!byPayment[k])byPayment[k]={total:0,count:0};
+      byPayment[k].total+=a.monto;byPayment[k].count++;
+    });
+  });
+  const maxPay=Math.max(...Object.values(byPayment).map(v=>v.total),1);
+  const payColors=['#1a6db5','#3b6d11','#854f0b','#a32d2d','#7c3aed','#0369a1','#166534'];
+  document.getElementById('dash-by-payment').innerHTML=Object.entries(byPayment).length?
+    Object.entries(byPayment).sort((a,b)=>b[1].total-a[1].total).map(([k,v],i)=>`
+    <div style="margin-bottom:12px">
+      <div class="flex flex-between" style="font-size:13px;margin-bottom:4px">
+        <span style="font-weight:500">${k}</span>
+        <span style="font-weight:700">${fmt(v.total)}</span>
+      </div>
+      <div style="background:#e5e3dc;border-radius:20px;height:8px;overflow:hidden">
+        <div style="height:100%;background:${payColors[i%payColors.length]};width:${Math.round(v.total/maxPay*100)}%"></div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);margin-top:2px">${v.count} transacciones</div>
+    </div>`).join(''):'<div style="text-align:center;padding:20px;color:var(--gray)">Sin pagos registrados.</div>';
+
+  // Top clientes
+  const byClient={};
+  invYear.forEach(inv=>{
+    const k=inv.client.commercial||inv.client.name;
+    if(!byClient[k])byClient[k]={name:inv.client.name,commercial:inv.client.commercial,total:0,cobrado:0,pendiente:0,count:0};
+    byClient[k].total+=inv.total;
+    byClient[k].cobrado+=inv.status==='Pagada'?inv.total:totalAbonado(inv);
+    byClient[k].pendiente+=inv.status==='Pendiente'?saldoPendiente(inv):0;
+    byClient[k].count++;
+  });
+  const topClients=Object.entries(byClient).sort((a,b)=>b[1].total-a[1].total);
+  document.getElementById('dash-by-client').innerHTML=topClients.length?`
+    <table><thead><tr><th>#</th><th>Cliente</th><th>Facturado</th><th>Cobrado</th><th>Pendiente</th><th>Facturas</th><th>Avance</th></tr></thead>
+    <tbody>${topClients.map(([k,v],i)=>`<tr>
+      <td style="color:var(--gray);font-weight:600">${i+1}</td>
+      <td><strong>${k}</strong>${v.commercial?`<br><small style="color:var(--gray)">${v.name}</small>`:''}</td>
+      <td style="font-weight:600">${fmt(v.total)}</td>
+      <td style="color:var(--green);font-weight:600">${fmt(v.cobrado)}</td>
+      <td style="color:var(--red);font-weight:600">${fmt(v.pendiente)}</td>
+      <td style="color:var(--gray)">${v.count}</td>
+      <td>
+        <div style="background:#e5e3dc;border-radius:20px;height:8px;overflow:hidden;min-width:60px">
+          <div style="height:100%;background:var(--green);width:${v.total>0?Math.round(v.cobrado/v.total*100):0}%"></div>
+        </div>
+        <div style="font-size:10px;color:var(--gray);margin-top:2px">${v.total>0?Math.round(v.cobrado/v.total*100):0}%</div>
+      </td>
+    </tr>`).join('')}</tbody></table>`:'<div style="text-align:center;padding:20px;color:var(--gray)">Sin datos de clientes.</div>';
+}
+
+// ── DASHBOARD ─────────────────────────────────────────
 function goTab(t){
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['facturas','nueva','cartera','clientes','productos','facturadores','empresa','datos'][i]===t));
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['dashboard','facturas','nueva','cartera','clientes','productos','facturadores','empresa','datos'][i]===t));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+t).classList.add('active');
+  if(t==='dashboard')renderDashboard();
   if(t==='facturas')renderInvoices();
   if(t==='cartera')renderCartera();
   if(t==='clientes')renderClients();
