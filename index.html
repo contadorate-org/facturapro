@@ -126,6 +126,7 @@ tr:hover td{background:#fafaf8}
   <div class="tab" onclick="goTab('productos')">Productos</div>
   <div class="tab" onclick="goTab('facturadores')">Facturadores</div>
   <div class="tab" onclick="goTab('empresa')">Mi Empresa</div>
+  <div class="tab" onclick="goTab('tesoreria')">🏦 Tesorería</div>
   <div class="tab" onclick="goTab('datos')">💾 Datos</div>
   <div class="nav-user">
     <span id="nav-username" style="font-size:12px;color:var(--gray)">👤</span>
@@ -556,8 +557,10 @@ async function _loadData(){
       if(d.invoices) invoices=d.invoices;
       if(d.clients) clients=d.clients;
       if(d.products) products=d.products;
-      if(d.company) company={...company,...d.company};
-      if(d.issuers) issuers=d.issuers;
+      if(d.cuentas) cuentas=d.cuentas;
+      if(d.tresIngresos) tresIngresos=d.tresIngresos;
+      if(d.tresEgresos) tresEgresos=d.tresEgresos;
+      if(d.tresCategorias) tresCategorias=d.tresCategorias;
     }
   }catch(e){console.error('Load error:',e);}
 }
@@ -565,7 +568,7 @@ async function _loadData(){
 async function _saveData(){
   if(!_uid) return;
   try{
-    const payload={invoices,clients,products,company,issuers};
+    const payload={invoices,clients,products,company,issuers,cuentas,tresIngresos,tresEgresos,tresCategorias};
     const{error}=await _SB.from('fp_data').upsert({user_id:_uid,data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});
     if(error) console.log('Save error:',error);
     else{
@@ -857,6 +860,7 @@ function goTab(t){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+t).classList.add('active');
   if(t==='dashboard')renderDashboard();
+  if(t==='tesoreria'){renderTesoresumen();showTresTab('resumen');}
   if(t==='facturas')renderInvoices();
   if(t==='cartera')renderCartera();
   if(t==='clientes')renderClients();
