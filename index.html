@@ -523,11 +523,8 @@ function limpiarDatos(tipo){
 
 const SURL='https://rddqovxastacbvhhwggv.supabase.co';
 const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkZHFvdnhhc3RhY2J2aGh3Z2d2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNjQwNTgsImV4cCI6MjA5NTY0MDA1OH0.eA8WpfrGn3en4NZ-IG3j8XSynvujrExD6Bv1Lmp1fCs';
-const sb=supabase.createClient(SURL,SKEY,{auth:{persistSession:false},global:{headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY}}});
 const sb=supabase.createClient(SURL,SKEY);
-let currentUserId=null;
-let currentUserData=null;
-let saveTimer=null;
+let currentUserId=null,currentUserData=null,saveTimer=null;
 
 async function doLogin(){
   const u=document.getElementById('login-user').value.trim();
@@ -639,7 +636,6 @@ let invoices=JSON.parse(localStorage.getItem('fp_invoices')||'[]');
 let clients=JSON.parse(localStorage.getItem('fp_clients')||'[]');
 let products=JSON.parse(localStorage.getItem('fp_products')||'[]');
 let company=JSON.parse(localStorage.getItem('fp_company')||'{"name":"","commercial":"","nit":"","phone":"","email":"","addr":"","footer":"","logo":""}');
-// 3 facturadores: array de objetos con mismos campos que company (sin logo)
 let issuers=JSON.parse(localStorage.getItem('fp_issuers')||JSON.stringify([
   {id:'1',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},
   {id:'2',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},
@@ -647,14 +643,6 @@ let issuers=JSON.parse(localStorage.getItem('fp_issuers')||JSON.stringify([
 ]));
 let selectedIssuerId='1';
 let editingId=null,editingClientIdx=null,editingProdIdx=null,items=[],currentPreviewInv=null;
-
-function save(){
-  localStorage.setItem('fp_invoices',JSON.stringify(invoices));
-  localStorage.setItem('fp_clients',JSON.stringify(clients));
-  localStorage.setItem('fp_products',JSON.stringify(products));
-  localStorage.setItem('fp_company',JSON.stringify(company));
-  localStorage.setItem('fp_issuers',JSON.stringify(issuers));
-}
 
 function goTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['facturas','nueva','cartera','clientes','productos','facturadores','empresa','datos'][i]===t)});
