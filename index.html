@@ -856,20 +856,22 @@ function renderDashboard(){
 
 // ── DASHBOARD ─────────────────────────────────────────
 function goTab(t){
-  const tabNames=['dashboard','facturas','nueva','cartera','clientes','productos','facturadores','empresa','tesoreria','datos'];
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',tabNames[i]===t));
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const page=document.getElementById('page-'+t);
-  if(page) page.classList.add('active');
-  if(t==='dashboard')renderDashboard();
-  if(t==='facturas')renderInvoices();
-  if(t==='cartera')renderCartera();
-  if(t==='clientes')renderClients();
-  if(t==='productos')renderProds();
-  if(t==='facturadores')renderIssuersForm();
-  if(t==='empresa')loadCompanyForm();
+  // Usar IDs en lugar de índices para evitar errores
+  ['dashboard','facturas','nueva','cartera','clientes','productos','facturadores','empresa','tesoreria','datos'].forEach(name=>{
+    const tabEl=document.getElementById('tab-'+name);
+    const pageEl=document.getElementById('page-'+name);
+    if(tabEl) tabEl.classList.toggle('active',name===t);
+    if(pageEl) pageEl.classList.toggle('active',name===t);
+  });
+  if(t==='dashboard') renderDashboard();
+  if(t==='facturas') renderInvoices();
+  if(t==='cartera') renderCartera();
+  if(t==='clientes') renderClients();
+  if(t==='productos') renderProds();
+  if(t==='facturadores') renderIssuersForm();
+  if(t==='empresa') loadCompanyForm();
   if(t==='tesoreria'){renderTesoresumen();showTresTab('resumen');}
-  if(t==='nueva'&&!editingId)initNewInvoice();
+  if(t==='nueva'&&!editingId) initNewInvoice();
 }
 
 // ── FACTURADORES ──────────────────────────────────────
