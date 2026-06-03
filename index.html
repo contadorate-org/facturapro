@@ -856,17 +856,19 @@ function renderDashboard(){
 
 // ── DASHBOARD ─────────────────────────────────────────
 function goTab(t){
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['dashboard','facturas','nueva','cartera','clientes','productos','facturadores','empresa','datos'][i]===t));
+  const tabNames=['dashboard','facturas','nueva','cartera','clientes','productos','facturadores','empresa','tesoreria','datos'];
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',tabNames[i]===t));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+t).classList.add('active');
+  const page=document.getElementById('page-'+t);
+  if(page) page.classList.add('active');
   if(t==='dashboard')renderDashboard();
-  if(t==='tesoreria'){renderTesoresumen();showTresTab('resumen');}
   if(t==='facturas')renderInvoices();
   if(t==='cartera')renderCartera();
   if(t==='clientes')renderClients();
   if(t==='productos')renderProds();
   if(t==='facturadores')renderIssuersForm();
   if(t==='empresa')loadCompanyForm();
+  if(t==='tesoreria'){renderTesoresumen();showTresTab('resumen');}
   if(t==='nueva'&&!editingId)initNewInvoice();
 }
 
