@@ -564,7 +564,6 @@ tr:hover td{background:#fafaf8}
     <div class="flex flex-end" style="margin-top:16px;gap:8px">
       <button class="btn" onclick="document.getElementById('preview-modal').classList.remove('open')">Cerrar</button>
       <button class="btn btn-success" id="pdf-btn" onclick="downloadPDF()">⬇ PDF</button>
-      <button class="btn" style="background:#25D366;color:#fff;border-color:#25D366" onclick="sendWhatsApp()">📱 WhatsApp</button>
       <button class="btn btn-primary" onclick="sendEmail()">✉ Email</button>
     </div>
   </div>
@@ -1006,64 +1005,7 @@ function downloadPDF(){
   }).catch(e=>{el.style.cssText=orig;btn.textContent='⬇ PDF';btn.disabled=false;alert('Error: '+e.message);});
 }
 
-function sendWhatsApp(){
-  const inv=currentPreviewInv;if(!inv)return;
-  const co=getIssuer(inv);
-  // Obtener teléfono del cliente — limpiar caracteres no numéricos
-  const rawPhone=(inv.client.phone||'').replace(/\D/g,'');
-  // Si empieza con 0 quitarlo, si no tiene código de país agregar 57 (Colombia)
-  let phone=rawPhone;
-  if(phone.startsWith('0')) phone=phone.substring(1);
-  if(phone.length===10) phone='57'+phone; // agregar código Colombia
-  // Construir mensaje
-  const msg=`Estimado/a *${inv.client.commercial||inv.client.name}*,
-
-Le enviamos su factura de *${co.commercial||co.name||'nuestra empresa'}*:
-
-📄 *Factura:* ${inv.num}
-📅 *Fecha:* ${inv.date}
-${inv.due?`⏰ *Vence:* ${inv.due}\n`:''}💰 *Total:* ${fmt(inv.total)}
-📋 *Estado:* ${inv.status}
-💳 *Método de pago:* ${inv.method||'—'}
-${inv.notes?`\n📝 *Notas:* ${inv.notes}\n`:''}
-El PDF de su factura se descargará automáticamente en su dispositivo.
-
-Gracias por su preferencia. 🙏`;
-
-  // Primero descargar el PDF
-  const el=document.getElementById('inv-preview');
-  const btn=document.querySelector('[onclick="sendWhatsApp()"]');
-  btn.textContent='⏳ Preparando...';btn.disabled=true;
-  const orig=el.style.cssText;
-  el.style.cssText='width:720px;background:#fff;padding:32px;font-family:Arial,sans-serif';
-  html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false}).then(canvas=>{
-    el.style.cssText=orig;
-    const{jsPDF}=window.jspdf;const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    const W=210,M=10,imgW=W-M*2,imgH=canvas.height*imgW/canvas.width,pageH=297-M*2;
-    let yPos=0;
-    while(yPos<imgH){
-      if(yPos>0)doc.addPage();
-      const srcY=yPos*canvas.width/imgW,srcH=Math.min(pageH,imgH-yPos)*canvas.width/imgW;
-      const sl=document.createElement('canvas');sl.width=canvas.width;sl.height=srcH;
-      sl.getContext('2d').drawImage(canvas,0,srcY,canvas.width,srcH,0,0,canvas.width,srcH);
-      doc.addImage(sl.toDataURL('image/png'),'PNG',M,M,imgW,Math.min(pageH,imgH-yPos));
-      yPos+=pageH;
-    }
-    doc.save('Factura-'+inv.num+'.pdf');
-    // Abrir WhatsApp después de descargar
-    setTimeout(()=>{
-      const url=phone
-        ?`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
-        :`https://wa.me/?text=${encodeURIComponent(msg)}`;
-      window.open(url,'_blank');
-      btn.textContent='📱 WhatsApp';btn.disabled=false;
-    },1000);
-  }).catch(e=>{
-    el.style.cssText=orig;
-    btn.textContent='📱 WhatsApp';btn.disabled=false;
-    alert('Error generando PDF: '+e.message);
-  });
-}
+function sendEmail(){
   const inv=currentPreviewInv;if(!inv)return;
   if(!inv.ejsService||!inv.ejsTemplate||!inv.ejsPubkey){alert('Completa las credenciales de EmailJS.');return;}
   if(!inv.client.email){alert('El cliente no tiene email.');return;}
