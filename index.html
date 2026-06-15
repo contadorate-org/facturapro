@@ -1483,18 +1483,22 @@ function renderDashboard(){
     <svg width="${Math.max(totalW,400)}" height="${chartH}" style="overflow:visible">${gridLines}<line x1="${padL}" y1="0" x2="${padL}" y2="${chartH-padB}" stroke="#e0ddd6" stroke-width="1"/><line x1="${padL}" y1="${chartH-padB}" x2="${totalW}" y2="${chartH-padB}" stroke="#e0ddd6" stroke-width="1"/>${bars}</svg>`;
   const tot=meses.reduce((acc,d)=>({f:acc.f+d.total,c:acc.c+d.cobrado,p:acc.p+d.pendiente,n:acc.n+d.count}),{f:0,c:0,p:0,n:0});
   document.getElementById('dash-cashflow-table').innerHTML=meses.length?`<table><thead><tr><th>Mes</th><th>Facturado</th><th>Cobrado</th><th>Pendiente</th><th>Facturas</th><th>Avance</th></tr></thead><tbody>${meses.map(d=>`<tr><td><strong>${d.nombre}</strong></td><td style="font-weight:600">${fmt(d.total)}</td><td style="color:var(--green);font-weight:600">${fmt(d.cobrado)}</td><td style="color:var(--red);font-weight:600">${fmt(d.pendiente)}</td><td style="color:var(--gray)">${d.count}</td><td><div style="background:#e5e3dc;border-radius:20px;height:8px;overflow:hidden;min-width:80px"><div style="height:100%;background:var(--green);width:${d.total>0?Math.round(d.cobrado/d.total*100):0}%"></div></div><div style="font-size:10px;color:var(--gray);margin-top:2px">${d.total>0?Math.round(d.cobrado/d.total*100):0}%</div></td></tr>`).join('')}</tbody><tfoot><tr style="background:var(--gray-l);font-weight:700"><td>TOTAL</td><td>${fmt(tot.f)}</td><td style="color:var(--green)">${fmt(tot.c)}</td><td style="color:var(--red)">${fmt(tot.p)}</td><td>${tot.n}</td><td></td></tr></tfoot></table>`:'<div style="text-align:center;padding:20px;color:var(--gray)">Sin datos.</div>';
-  // Por facturador — desglose individual con clientes
+  // Por facturador — desglose individual usando issuer.name (persona) como clave única
   const byIssuer={};
   invYear.forEach(inv=>{
-    const issKey=inv.issuer?.commercial||inv.issuer?.name||'Sin facturador';
-    if(!byIssuer[issKey])byIssuer[issKey]={label:issKey,total:0,cobrado:0,pendiente:0,count:0,clients:{}};
+    // Clave única = nombre de la persona (YAMILE, BEATRIZ, etc.)
+    const issKey=inv.issuer?.name||inv.issuer?.commercial||'Sin facturador';
+    const issLabel=inv.issuer?.name||'Sin facturador';
+    const issCommercial=inv.issuer?.commercial||'';
+    if(!byIssuer[issKey])byIssuer[issKey]={label:issLabel,commercial:issCommercial,total:0,cobrado:0,pendiente:0,count:0,clients:{}};
     const iss=byIssuer[issKey];
     iss.total+=inv.total;
     iss.cobrado+=inv.status==='Pagada'?inv.total:totalAbonado(inv);
     iss.pendiente+=inv.status==='Pendiente'?saldoPendiente(inv):0;
     iss.count++;
-    const ck=inv.client.commercial||inv.client.name;
-    if(!iss.clients[ck])iss.clients[ck]={name:inv.client.name,commercial:inv.client.commercial,email:inv.client.email||'',total:0,cobrado:0,pendiente:0,count:0};
+    const ck=inv.client.name; // clave única del cliente
+    const ckLabel=inv.client.commercial||inv.client.name;
+    if(!iss.clients[ck])iss.clients[ck]={name:inv.client.name,commercial:inv.client.commercial||'',total:0,cobrado:0,pendiente:0,count:0};
     const cl=iss.clients[ck];
     cl.total+=inv.total;
     cl.cobrado+=inv.status==='Pagada'?inv.total:totalAbonado(inv);
@@ -1506,26 +1510,33 @@ function renderDashboard(){
     Object.entries(byIssuer).sort((a,b)=>b[1].total-a[1].total).map(([k,v],ii)=>{
       const color=issuerColors[ii%issuerColors.length];
       const pct=v.total>0?Math.round(v.cobrado/v.total*100):0;
-      const clientRows=Object.entries(v.clients).sort((a,b)=>b[1].total-a[1].total).map(([ck,cv])=>`
-        <tr>
-          <td><strong>${ck}</strong>${cv.commercial&&cv.commercial!==ck?`<br><small style="color:var(--gray)">${cv.name}</small>`:''}</td>
+      const clientRows=Object.entries(v.clients).sort((a,b)=>b[1].total-a[1].total).map(([ck,cv])=>{
+        const dispName=cv.commercial||cv.name;
+        const subName=cv.commercial&&cv.commercial!==cv.name?`<br><small style="color:var(--gray);font-size:10px">${cv.name}</small>`:'';
+        const cpct=cv.total>0?Math.round(cv.cobrado/cv.total*100):0;
+        return`<tr>
+          <td><strong>${dispName}</strong>${subName}</td>
           <td style="font-weight:600">${fmt(cv.total)}</td>
           <td style="color:var(--green);font-weight:600">${fmt(cv.cobrado)}</td>
           <td style="color:var(--red);font-weight:600">${fmt(cv.pendiente)}</td>
-          <td style="color:var(--gray)">${cv.count}</td>
-          <td><div style="background:#e5e3dc;border-radius:20px;height:7px;overflow:hidden;min-width:60px"><div style="height:100%;background:${color};width:${cv.total>0?Math.round(cv.cobrado/cv.total*100):0}%"></div></div>
-          <div style="font-size:10px;color:var(--gray);margin-top:2px">${cv.total>0?Math.round(cv.cobrado/cv.total*100):0}%</div></td>
-        </tr>`).join('');
+          <td style="color:var(--gray);text-align:center">${cv.count}</td>
+          <td><div style="background:#e5e3dc;border-radius:20px;height:7px;overflow:hidden;min-width:60px"><div style="height:100%;background:${color};width:${cpct}%"></div></div>
+          <div style="font-size:10px;color:var(--gray);margin-top:2px">${cpct}%</div></td>
+        </tr>`;
+      }).join('');
       return`<div style="border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden">
         <div style="background:${color}12;border-left:4px solid ${color};padding:14px 16px">
-          <div class="flex flex-between" style="margin-bottom:6px">
-            <span style="font-size:14px;font-weight:700;color:${color}">${k}</span>
-            <span style="font-size:14px;font-weight:700">${fmt(v.total)}</span>
+          <div class="flex flex-between" style="margin-bottom:4px">
+            <div>
+              <span style="font-size:14px;font-weight:700;color:${color}">${v.label}</span>
+              ${v.commercial?`<span style="font-size:11px;color:var(--gray);margin-left:8px">${v.commercial}</span>`:''}
+            </div>
+            <span style="font-size:15px;font-weight:700">${fmt(v.total)}</span>
           </div>
-          <div class="flex" style="gap:16px;font-size:12px;margin-bottom:8px">
+          <div class="flex" style="gap:16px;font-size:12px;margin-bottom:8px;flex-wrap:wrap">
             <span style="color:var(--green)">✅ Cobrado: <strong>${fmt(v.cobrado)}</strong></span>
             <span style="color:var(--red)">⏳ Pendiente: <strong>${fmt(v.pendiente)}</strong></span>
-            <span style="color:var(--gray)">${v.count} factura(s)</span>
+            <span style="color:var(--gray)">${v.count} factura(s) · ${Object.keys(v.clients).length} cliente(s)</span>
           </div>
           <div style="background:#e5e3dc;border-radius:20px;height:8px;overflow:hidden">
             <div style="height:100%;background:${color};width:${pct}%"></div>
@@ -1534,7 +1545,7 @@ function renderDashboard(){
         </div>
         <div style="overflow-x:auto">
           <table style="font-size:12px">
-            <thead><tr><th>Cliente</th><th>Facturado</th><th>Cobrado</th><th>Pendiente</th><th>Fact.</th><th>Avance</th></tr></thead>
+            <thead><tr><th>Cliente</th><th>Facturado</th><th>Cobrado</th><th>Pendiente</th><th style="text-align:center">Fact.</th><th>Avance</th></tr></thead>
             <tbody>${clientRows}</tbody>
           </table>
         </div>
@@ -1564,17 +1575,20 @@ function sendCarteraWA(clientName,phone,ci){
   if(!pending.length){alert('Este cliente no tiene facturas pendientes.');return;}
   const clientDisplay=pending[0].client.commercial||pending[0].client.name;
   const totalDeuda=pending.reduce((s,i)=>s+saldoPendiente(i),0);
+  const empresa=pending[0].issuer?.commercial||pending[0].issuer?.name||'nosotros';
   let detalle=pending.map(inv=>{
     const sl=saldoPendiente(inv);
+    const ab=totalAbonado(inv);
     const dias=diasVenc(inv.due);
-    let estadoTxt=inv.due?`Vence: ${inv.due}`:'Sin vencimiento';
-    if(dias!==null&&dias<0)estadoTxt=`⚠️ Vencida hace ${Math.abs(dias)} días`;
+    let estadoTxt=inv.due?`📅 Vence: ${inv.due}`:'📅 Sin fecha de vencimiento';
+    if(dias!==null&&dias<0)estadoTxt=`⚠️ Venció hace ${Math.abs(dias)} días`;
     else if(dias===0)estadoTxt='⚠️ Vence HOY';
-    else if(dias!==null&&dias<=7)estadoTxt=`⏰ Vence en ${dias} días`;
-    const issuer=inv.issuer?.commercial||inv.issuer?.name||'';
-    return `• Factura *${inv.num}*${issuer?' ('+issuer+')':''}\n  Valor: ${fmt(inv.total)}${totalAbonado(inv)>0?' | Abonado: '+fmt(totalAbonado(inv)):''}  | Saldo: *${fmt(sl)}*\n  ${estadoTxt}`;
+    else if(dias!==null&&dias<=7)estadoTxt=`⏰ Próxima a vencer: ${dias} día(s)`;
+    const issuerName=inv.issuer?.name||'';
+    return `  📄 *Factura ${inv.num}*${issuerName?' — '+issuerName:''}\n     Valor total: ${fmt(inv.total)}${ab>0?'\n     Abonado: '+fmt(ab):''}
+     *Saldo pendiente: ${fmt(sl)}*\n     ${estadoTxt}`;
   }).join('\n\n');
-  const msg=`Estimado(a) *${clientDisplay}*,\n\nLe informamos el estado actual de su cartera:\n\n${detalle}\n\n💰 *Total pendiente: ${fmt(totalDeuda)}*\n\nQuedamos atentos para coordinar el pago.\n\nGracias.`;
+  const msg=`Estimado(a) *${clientDisplay}*,\n\nEsperamos que se encuentre muy bien. 😊\n\nEs un honor contar con usted como cliente y valoramos profundamente la confianza que ha depositado en nosotros. Precisamente por esa razón, queremos mantener una comunicación transparente con usted.\n\nLe compartimos el estado actual de su cuenta con *${empresa}*:\n\n${detalle}\n\n💰 *Total pendiente: ${fmt(totalDeuda)}*\n\nSabemos que a veces los tiempos no son los ideales, pero le agradecemos enormemente si puede gestionar este pago a la brevedad posible, pues nos permite seguir brindándole el mejor servicio que usted merece.\n\nSi ya realizó el pago o tiene alguna inquietud, con mucho gusto lo atendemos. 🙏\n\n¡Muchas gracias y que tenga un excelente día!\n\n*${empresa}*`;
   let p=phone.replace(/[\s\-\(\)]/g,'');
   if(/^3\d{9}$/.test(p))p='57'+p;
   window.open('https://wa.me/'+p+'?text='+encodeURIComponent(msg),'_blank');
@@ -1586,56 +1600,68 @@ function sendCarteraEmail(clientName,email,ci){
   if(!pending.length){alert('Este cliente no tiene facturas pendientes.');return;}
   const clientDisplay=pending[0].client.commercial||pending[0].client.name;
   const totalDeuda=pending.reduce((s,i)=>s+saldoPendiente(i),0);
+  const empresa=pending[0].issuer?.commercial||pending[0].issuer?.name||'Nuestra empresa';
   const rows=pending.map(inv=>{
     const sl=saldoPendiente(inv);
     const ab=totalAbonado(inv);
     const dias=diasVenc(inv.due);
     let estadoColor='#854f0b';let estadoTxt=inv.due||'Sin vencimiento';
-    if(dias!==null&&dias<0){estadoColor='#a32d2d';estadoTxt=`Vencida hace ${Math.abs(dias)} días`;}
+    if(dias!==null&&dias<0){estadoColor='#a32d2d';estadoTxt=`Venció hace ${Math.abs(dias)} días`;}
     else if(dias===0){estadoColor='#a32d2d';estadoTxt='Vence HOY';}
     else if(dias!==null&&dias<=7){estadoColor='#854f0b';estadoTxt=`Vence en ${dias} días`;}
-    const issuer=inv.issuer?.commercial||inv.issuer?.name||'—';
+    const issuer=inv.issuer?.name||inv.issuer?.commercial||'—';
     return`<tr>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee"><strong>${inv.num}</strong></td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee;font-size:12px">${issuer}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee">${inv.date}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee;color:${estadoColor};font-weight:600">${estadoTxt}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee">${fmt(inv.total)}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee;color:#3b6d11">${ab>0?fmt(ab):'—'}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee;color:#a32d2d;font-weight:700">${fmt(sl)}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee"><strong>${inv.num}</strong></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;font-size:12px;color:#555">${issuer}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee">${inv.date}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;color:${estadoColor};font-weight:600">${estadoTxt}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;text-align:right">${fmt(inv.total)}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;text-align:right;color:#3b6d11">${ab>0?fmt(ab):'—'}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #eee;text-align:right;color:#a32d2d;font-weight:700">${fmt(sl)}</td>
     </tr>`;
   }).join('');
   const html=`<div style="font-family:Arial,sans-serif;max-width:680px;color:#1a1a1a">
-    <div style="background:#1a6db5;padding:20px 24px;border-radius:8px 8px 0 0">
-      <div style="font-size:18px;font-weight:700;color:#fff">📄 Estado de Cartera</div>
-      <div style="font-size:13px;color:#bfdbfe;margin-top:4px">${clientDisplay}</div>
+    <div style="background:linear-gradient(135deg,#1a3a5c,#1a6db5);padding:24px;border-radius:10px 10px 0 0;text-align:center">
+      <div style="font-size:22px;font-weight:700;color:#fff">📄 Estado de Cartera</div>
+      <div style="font-size:13px;color:#bfdbfe;margin-top:6px">${empresa}</div>
     </div>
-    <div style="border:1px solid #e0ddd6;border-top:none;border-radius:0 0 8px 8px;padding:20px">
-      <p style="font-size:14px;margin-bottom:16px">Estimado(a) <strong>${clientDisplay}</strong>, a continuación encontrará el detalle de sus facturas pendientes:</p>
-      <table style="width:100%;border-collapse:collapse;font-size:13px">
+    <div style="border:1px solid #e0ddd6;border-top:none;border-radius:0 0 10px 10px;padding:28px">
+      <p style="font-size:15px;margin-bottom:8px">Estimado(a) <strong>${clientDisplay}</strong>,</p>
+      <p style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">
+        Esperamos que se encuentre muy bien. Desde <strong>${empresa}</strong> queremos expresarle lo mucho que valoramos su confianza y la relación que hemos construido juntos. Clientes como usted son la razón por la que damos lo mejor de nosotros cada día.
+      </p>
+      <p style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">
+        Con el ánimo de mantener una comunicación transparente, le compartimos el estado actual de su cuenta:
+      </p>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px">
         <thead><tr style="background:#f1f5f9">
-          <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #e0ddd6">Factura</th>
-          <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #e0ddd6">Facturador</th>
-          <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #e0ddd6">Fecha</th>
-          <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #e0ddd6">Vencimiento</th>
-          <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #e0ddd6">Total</th>
-          <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #e0ddd6">Abonado</th>
-          <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #e0ddd6">Saldo</th>
+          <th style="padding:10px 12px;text-align:left;border-bottom:2px solid #e0ddd6">Factura</th>
+          <th style="padding:10px 12px;text-align:left;border-bottom:2px solid #e0ddd6">Facturador</th>
+          <th style="padding:10px 12px;text-align:left;border-bottom:2px solid #e0ddd6">Fecha</th>
+          <th style="padding:10px 12px;text-align:left;border-bottom:2px solid #e0ddd6">Vencimiento</th>
+          <th style="padding:10px 12px;text-align:right;border-bottom:2px solid #e0ddd6">Total</th>
+          <th style="padding:10px 12px;text-align:right;border-bottom:2px solid #e0ddd6">Abonado</th>
+          <th style="padding:10px 12px;text-align:right;border-bottom:2px solid #e0ddd6">Saldo</th>
         </tr></thead>
         <tbody>${rows}</tbody>
         <tfoot><tr style="background:#fef2f2">
-          <td colspan="6" style="padding:10px;font-weight:700;text-align:right">TOTAL PENDIENTE:</td>
-          <td style="padding:10px;font-weight:700;color:#a32d2d;font-size:15px">${fmt(totalDeuda)}</td>
+          <td colspan="6" style="padding:12px;font-weight:700;text-align:right;font-size:14px">TOTAL PENDIENTE:</td>
+          <td style="padding:12px;font-weight:700;color:#a32d2d;font-size:16px;text-align:right">${fmt(totalDeuda)}</td>
         </tr></tfoot>
       </table>
-      <p style="font-size:12px;color:#64748b;margin-top:16px">Por favor comuníquese con nosotros para coordinar el pago. Gracias.</p>
+      <div style="background:#eff6ff;border-left:4px solid #1a6db5;border-radius:6px;padding:14px 16px;margin-bottom:20px">
+        <p style="font-size:13px;color:#1e3a5f;margin:0;line-height:1.6">
+          🙏 Le agradecemos enormemente si puede gestionar este pago a la brevedad posible. Su puntualidad nos permite seguir ofreciéndole el servicio de calidad que usted merece. Si ya realizó el pago o tiene alguna inquietud, con mucho gusto lo atendemos.
+        </p>
+      </div>
+      <p style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:4px">¡Muchas gracias por su confianza y que tenga un excelente día!</p>
+      <p style="font-size:13px;font-weight:700;color:#1a6db5;margin:0">${empresa}</p>
     </div>
   </div>`;
   const inv1=pending[0];
   if(!inv1.ejsService||!inv1.ejsTemplate||!inv1.ejsPubkey){
-    // Fallback: abrir cliente de correo nativo
     const subject=encodeURIComponent(`Estado de Cartera - ${clientDisplay}`);
-    const body=encodeURIComponent(`Estimado(a) ${clientDisplay},\n\nAdjunto encontrará el estado de sus facturas pendientes.\n\nTotal pendiente: ${fmt(totalDeuda)}\n\nFacturas:\n`+pending.map(inv=>`- ${inv.num}: ${fmt(saldoPendiente(inv))} (Vence: ${inv.due||'—'})`).join('\n')+'\n\nGracias.');
+    const body=encodeURIComponent(`Estimado(a) ${clientDisplay},\n\nEsperamos que se encuentre muy bien. Desde ${empresa} queremos agradecerle la confianza que nos ha brindado.\n\nA continuación le compartimos el estado de su cuenta:\n\n`+pending.map(inv=>`• Factura ${inv.num}: Saldo ${fmt(saldoPendiente(inv))} (Vence: ${inv.due||'—'})`).join('\n')+`\n\nTotal pendiente: ${fmt(totalDeuda)}\n\nLe agradecemos gestionar el pago a la brevedad. Cualquier inquietud, estamos a su disposición.\n\nMuchas gracias,\n${empresa}`);
     window.open(`mailto:${email}?subject=${subject}&body=${body}`,'_blank');
     return;
   }
@@ -1643,7 +1669,7 @@ function sendCarteraEmail(clientName,email,ci){
     window.emailjs.init({publicKey:inv1.ejsPubkey});
     window.emailjs.send(inv1.ejsService,inv1.ejsTemplate,{
       to_email:email,
-      invoice_number:'Cartera',
+      invoice_number:'Estado de Cartera',
       client_name:clientDisplay,
       total:fmt(totalDeuda),
       date:new Date().toISOString().split('T')[0],
