@@ -608,7 +608,7 @@ const _SB=supabase.createClient(
   'https://rddqovxastacbvhhwggv.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkZHFvdnhhc3RhY2J2aGh3Z2d2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNjQwNTgsImV4cCI6MjA5NTY0MDA1OH0.eA8WpfrGn3en4NZ-IG3j8XSynvujrExD6Bv1Lmp1fCs'
 );
-let _uid=null,_saveTimer=null;
+let _uid=null,_token=null,_saveTimer=null;
 
 // ── DATOS ─────────────────────────────────────────────
 let invoices=[],clients=[],products=[],cuentas=[],tresIngresos=[],tresEgresos=[],tresCategorias=[];
@@ -624,7 +624,7 @@ function save(){
     if(!_uid)return;
     try{
       const d={invoices,clients,products,company,issuers,cuentas,tresIngresos,tresEgresos,tresCategorias};
-      await _SB.from('fp_data').upsert({user_id:_uid,data:d,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+      await _SB.rpc('fp_save_data',{p_user_id:_uid,p_token:_token,p_data:d});
       const ind=document.getElementById('sync-ind');
       ind.style.display='flex';setTimeout(()=>ind.style.display='none',2000);
     }catch(e){console.error('Save error:',e);}
@@ -638,16 +638,16 @@ async function forceSave(){
   if(!_uid){el.textContent='No hay sesión activa.';return;}
   try{
     const d={invoices,clients,products,company,issuers,cuentas,tresIngresos,tresEgresos,tresCategorias};
-    await _SB.from('fp_data').upsert({user_id:_uid,data:d,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+    await _SB.rpc('fp_save_data',{p_user_id:_uid,p_token:_token,p_data:d});
     el.textContent='✅ Sincronizado - '+new Date().toLocaleTimeString();
   }catch(e){el.textContent='❌ Error: '+e.message;}
 }
 
 async function loadData(){
   try{
-    const{data,error}=await _SB.from('fp_data').select('data').eq('user_id',_uid).maybeSingle();
-    if(error||!data||!data.data)return;
-    const d=data.data;
+    const{data,error}=await _SB.rpc('fp_get_data',{p_user_id:_uid,p_token:_token});
+    if(error||!data)return;
+    const d=data;
     if(d.invoices) invoices=d.invoices;
     if(d.clients) clients=d.clients;
     if(d.products) products=d.products;
@@ -670,17 +670,17 @@ async function doLogin(){
   if(!u||!p){err.style.display='block';err.textContent='Ingresa usuario y contraseña';return;}
   btn.textContent='Verificando...';btn.disabled=true;
   try{
-    const{data,error}=await _SB.from('fp_users').select('*').eq('username',u).maybeSingle();
+    const{data,error}=await _SB.rpc('fp_login',{p_username:u,p_password:p});
+    const row=Array.isArray(data)&&data.length?data[0]:null;
     if(error){err.style.display='block';err.textContent='Error BD: '+error.message;}
-    else if(!data){err.style.display='block';err.textContent='Usuario no encontrado.';}
-    else if(data.password!==p){err.style.display='block';err.textContent='Contraseña incorrecta.';}
-    else if(data.blocked){err.style.display='block';err.textContent='Acceso bloqueado.';}
+    else if(!row){err.style.display='block';err.textContent='Usuario o contraseña incorrectos.';}
+    else if(row.blocked||!row.token){err.style.display='block';err.textContent='Acceso bloqueado.';}
     else{
-      _uid=data.id;
+      _uid=row.id;_token=row.token;
       await loadData();
       document.getElementById('login-screen').style.display='none';
       document.getElementById('app-screen').style.display='block';
-      document.getElementById('nav-username').textContent='👤 '+(data.full_name||data.username);
+      document.getElementById('nav-username').textContent='👤 '+(row.full_name||row.username);
       goTab('facturas');
     }
   }catch(e){err.style.display='block';err.textContent='Error: '+e.message;}
@@ -688,7 +688,8 @@ async function doLogin(){
 }
 
 function doLogout(){
-  _uid=null;
+  if(_uid)_SB.rpc('fp_logout',{p_user_id:_uid,p_token:_token});
+  _uid=null;_token=null;
   invoices=[];clients=[];products=[];cuentas=[];tresIngresos=[];tresEgresos=[];tresCategorias=[];
   company={name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:'',logo:''};
   issuers=[{id:'1',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},{id:'2',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''},{id:'3',name:'',commercial:'',nit:'',phone:'',email:'',addr:'',footer:''}];
@@ -707,16 +708,15 @@ async function savePassword(){
   err.style.display='none';
   if(nw.length<6){err.textContent='Mínimo 6 caracteres.';err.style.display='block';return;}
   if(nw!==cf){err.textContent='No coinciden.';err.style.display='block';return;}
-  const{data}=await _SB.from('fp_users').select('password').eq('id',_uid).single();
-  if(!data||data.password!==cur){err.textContent='Contraseña actual incorrecta.';err.style.display='block';return;}
-  await _SB.from('fp_users').update({password:nw}).eq('id',_uid);
+  const{data,error}=await _SB.rpc('fp_change_password',{p_user_id:_uid,p_token:_token,p_current_password:cur,p_new_password:nw});
+  if(error||!data){err.textContent='Contraseña actual incorrecta.';err.style.display='block';return;}
   document.getElementById('pwd-modal').classList.remove('open');
   alert('✅ Contraseña actualizada.');
 }
 
 // ── PING ──────────────────────────────────────────────
 (function startPing(){
-  async function ping(){try{await _SB.from('fp_users').select('id').limit(1);console.log('Ping OK',new Date().toLocaleString());}catch(e){}}
+  async function ping(){try{await _SB.rpc('ping');console.log('Ping OK',new Date().toLocaleString());}catch(e){}}
   ping();setInterval(ping,345600000);
 })();
 
