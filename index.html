@@ -101,6 +101,30 @@ tr:hover td{background:#fafaf8}
 .tres-tab-btn{padding:6px 14px;font-size:12px;border:1.5px solid var(--border);border-radius:20px;cursor:pointer;background:#fff;color:var(--gray);font-weight:500}
 .tres-tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
 .sync-ind{position:fixed;bottom:16px;right:16px;background:var(--green);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;display:none;z-index:999}
+/* Informes */
+.inf-filtros{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.inf-sw.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.inf-table th.r,.inf-table td.r{text-align:right;white-space:nowrap}
+.inf-table td{font-size:12.5px}
+.inf-tot td{font-weight:700;background:var(--gray-l);border-top:2px solid var(--border)}
+.inf-hl td{background:var(--blue-l,#e6f1fb)}
+.inf-note{background:var(--amber-l);color:#6b4a00;border-radius:8px;padding:10px 14px;font-size:12.5px;margin-bottom:16px}
+.inf-chart{display:flex;gap:6px;align-items:flex-end;overflow-x:auto;padding:4px 0}
+.inf-bar-col{flex:1;min-width:38px;display:flex;flex-direction:column;align-items:center}
+.inf-bar-track{height:140px;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.inf-bar{width:70%;max-width:40px;background:var(--blue);border-radius:4px 4px 0 0}
+.inf-bar-val{font-size:10.5px;color:var(--gray);height:16px;white-space:nowrap}
+.inf-bar-lbl{font-size:11px;color:var(--gray);margin-top:4px;white-space:nowrap}
+.print-only{display:none}
+@media(max-width:700px){.inf-filtros{grid-template-columns:1fr 1fr}}
+@media print{
+  nav,.no-print,#sync-ind,.modal-bg{display:none!important}
+  .print-only{display:block!important;margin-bottom:14px}.print-only h2{font-size:17px;margin-bottom:4px}.print-only div{font-size:12px;color:#555}
+  body{background:#fff!important}.content{max-width:none!important;padding:0!important}
+  .card,.stat-card{break-inside:avoid;box-shadow:none}.card{overflow:visible!important}
+  .inf-table td,.inf-table th{font-size:10.5px;padding:5px 6px}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 @media(max-width:600px){.grid2,.grid3,.issuer-selector{grid-template-columns:1fr}}
 </style>
 </head>
@@ -129,6 +153,7 @@ tr:hover td{background:#fafaf8}
   <div class="tab" id="tab-nueva" onclick="goTab('nueva')">Nueva Factura</div>
   <div class="tab" id="tab-cartera" onclick="goTab('cartera')">Cartera</div>
   <div class="tab" id="tab-recibos" onclick="goTab('recibos')">🧾 Recibos de Caja</div>
+  <div class="tab" id="tab-informes" onclick="goTab('informes')">📑 Informes</div>
   <div class="tab" id="tab-clientes" onclick="goTab('clientes')">Clientes</div>
   <div class="tab" id="tab-productos" onclick="goTab('productos')">Productos</div>
   <div class="tab" id="tab-facturadores" onclick="goTab('facturadores')">Facturadores</div>
@@ -310,6 +335,100 @@ tr:hover td{background:#fafaf8}
     <table><thead><tr><th>Recibo</th><th>Fecha</th><th>Cliente</th><th>Factura</th><th>Facturador</th><th>Método</th><th>Valor</th><th></th></tr></thead>
     <tbody id="recibos-tbody"></tbody></table>
     <div id="recibos-empty" style="display:none;text-align:center;padding:40px;color:var(--gray)">Aún no se han generado recibos de caja.</div>
+  </div>
+</div>
+
+<!-- INFORMES -->
+<div id="page-informes" class="page">
+  <div class="flex flex-between no-print" style="margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div class="section-title" style="margin:0">📑 Informes</div>
+    <div class="flex" style="gap:6px">
+      <button class="btn btn-sm inf-sw active" id="infsw-mes" onclick="showInfTab('mes')">🗓️ Facturas del mes</button>
+      <button class="btn btn-sm inf-sw" id="infsw-tercero" onclick="showInfTab('tercero')">👤 Pagos por tercero</button>
+    </div>
+  </div>
+
+  <!-- Informe 1: Facturas del mes por centro de costo -->
+  <div id="inf-mes" class="inf-panel">
+    <div class="card no-print" style="padding:14px 20px">
+      <div class="inf-filtros">
+        <div><label>Mes</label><input id="infm-mes" type="month" onchange="renderInfMes()"/></div>
+        <div><label>Centro de costo / Área</label><select id="infm-centro" onchange="renderInfMes()"></select></div>
+        <div><label>Facturador</label><select id="infm-issuer" onchange="renderInfMes()"></select></div>
+        <div><label>Estado</label><select id="infm-estado" onchange="renderInfMes()"><option value="">Todos</option><option value="Pagada">Pagadas</option><option value="Pendiente">Pendientes</option></select></div>
+      </div>
+      <div class="flex flex-end" style="margin-top:12px;gap:8px">
+        <button class="btn btn-sm" onclick="window.print()">🖨️ Imprimir / PDF</button>
+        <button class="btn btn-sm btn-success" onclick="exportInfMes()">📥 Exportar Excel</button>
+      </div>
+    </div>
+    <div class="print-only" id="infm-print-head"></div>
+    <div id="infm-stats" class="stat-grid"></div>
+    <div id="infm-centro-note" class="inf-note" style="display:none"></div>
+    <div class="card" style="padding:0;overflow:auto">
+      <table class="inf-table"><thead><tr><th>No.</th><th>Fecha</th><th>Cliente / NIT</th><th>Centro(s)</th><th class="r">Subtotal</th><th class="r">IVA</th><th class="r">Total</th><th class="r">Abonado</th><th class="r">Saldo</th><th>Estado</th></tr></thead>
+      <tbody id="infm-tbody"></tbody><tfoot id="infm-tfoot"></tfoot></table>
+      <div id="infm-empty" style="display:none;text-align:center;padding:40px;color:var(--gray)">No hay facturas con estos filtros.</div>
+    </div>
+    <div class="card" id="infm-resumen-card">
+      <h2>Resumen por centro de costo</h2>
+      <table class="inf-table"><thead><tr><th>Centro / Área</th><th class="r">Facturas</th><th class="r">Subtotal</th><th class="r">IVA</th><th class="r">Total</th><th class="r">% del mes</th></tr></thead>
+      <tbody id="infm-resumen"></tbody></table>
+    </div>
+  </div>
+
+  <!-- Informe 2: Pagos por tercero en el tiempo -->
+  <div id="inf-tercero" class="inf-panel" style="display:none">
+    <div class="card no-print" style="padding:14px 20px">
+      <div class="inf-filtros">
+        <div style="grid-column:span 2"><label>Tercero (cliente)</label><select id="inft-tercero" onchange="renderInfTercero()"></select></div>
+        <div><label>Desde</label><input id="inft-desde" type="date" onchange="renderInfTercero()"/></div>
+        <div><label>Hasta</label><input id="inft-hasta" type="date" onchange="renderInfTercero()"/></div>
+      </div>
+      <div class="flex flex-between" style="margin-top:12px;gap:8px;flex-wrap:wrap">
+        <div class="flex" style="gap:6px;flex-wrap:wrap">
+          <button class="btn btn-sm" onclick="setInfRango('mes')">Este mes</button>
+          <button class="btn btn-sm" onclick="setInfRango('3m')">Últimos 3 meses</button>
+          <button class="btn btn-sm" onclick="setInfRango('anio')">Este año</button>
+          <button class="btn btn-sm" onclick="setInfRango('12m')">Últimos 12 meses</button>
+          <button class="btn btn-sm" onclick="setInfRango('todo')">Todo</button>
+        </div>
+        <div class="flex" style="gap:8px">
+          <button class="btn btn-sm" onclick="window.print()">🖨️ Imprimir / PDF</button>
+          <button class="btn btn-sm btn-success" onclick="exportInfTercero()">📥 Exportar Excel</button>
+        </div>
+      </div>
+    </div>
+    <div class="print-only" id="inft-print-head"></div>
+    <div id="inft-stats" class="stat-grid"></div>
+
+    <!-- Vista: todos los terceros -->
+    <div id="inft-todos">
+      <div class="card" style="padding:0;overflow:auto">
+        <table class="inf-table"><thead><tr><th>Tercero</th><th>NIT</th><th class="r">Pagos</th><th class="r">Total pagado</th><th>Último pago</th><th class="r">Saldo pendiente hoy</th><th class="no-print"></th></tr></thead>
+        <tbody id="inft-todos-tbody"></tbody><tfoot id="inft-todos-tfoot"></tfoot></table>
+        <div id="inft-todos-empty" style="display:none;text-align:center;padding:40px;color:var(--gray)">No hay pagos registrados en este rango.</div>
+      </div>
+    </div>
+
+    <!-- Vista: un tercero -->
+    <div id="inft-uno" style="display:none">
+      <div class="card">
+        <h2>Pagos por mes</h2>
+        <div id="inft-chart"></div>
+      </div>
+      <div class="card" style="padding:0;overflow:auto">
+        <table class="inf-table"><thead><tr><th>Fecha pago</th><th>Recibo</th><th>Factura</th><th>Fecha fact.</th><th class="r">Días</th><th>Método</th><th>Cuenta</th><th class="r">Valor</th><th class="r">Acumulado</th></tr></thead>
+        <tbody id="inft-tbody"></tbody><tfoot id="inft-tfoot"></tfoot></table>
+        <div id="inft-empty" style="display:none;text-align:center;padding:40px;color:var(--gray)">Este tercero no tiene pagos en el rango seleccionado.</div>
+      </div>
+      <div id="inft-sinrecibo" class="inf-note" style="display:none"></div>
+      <div class="card">
+        <h2>Facturas del tercero con saldo pendiente</h2>
+        <table class="inf-table"><thead><tr><th>Factura</th><th>Fecha</th><th>Vence</th><th class="r">Total</th><th class="r">Abonado</th><th class="r">Saldo</th></tr></thead>
+        <tbody id="inft-pend"></tbody></table>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -816,6 +935,7 @@ function goTab(t){
   if(t==='facturas') renderInvoices();
   if(t==='cartera') renderCartera();
   if(t==='recibos') renderRecibos();
+  if(t==='informes') initInformes();
   if(t==='clientes') renderClients();
   if(t==='productos') renderProds();
   if(t==='facturadores') renderIssuersForm();
@@ -2109,6 +2229,287 @@ function sendCarteraEmail(clientName,email,ci){
 }
 
 renderInvoices();
+
+// ── INFORMES ──────────────────────────────────────────
+// Informe 1: facturas de un mes, filtrables por centro de costo (el centro vive en cada ítem;
+//            con filtro de centro, los valores de cada factura son SOLO la porción de ese centro).
+// Informe 2: pagos (abonos / recibos de caja) por tercero a lo largo del tiempo.
+const MESES_CORTOS=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const MESES_LARGOS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+function infEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function hoyLocal(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function mesLabel(ym,largo){if(!ym)return'';const[y,m]=ym.split('-');return(largo?MESES_LARGOS:MESES_CORTOS)[+m-1]+(largo?' de ':' ')+(largo?y:y.slice(2));}
+function fechaCorta(f){if(!f)return'—';const[y,m,d]=f.split('-');return`${d}/${m}/${y}`;}
+function diasEntre(a,b){if(!a||!b)return null;return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000);}
+function terceroKey(c){
+  c=c||{};
+  const nit=String(c.nit||'').split('-')[0].replace(/\D/g,'');
+  return nit?'NIT:'+nit:'NOM:'+String(c.name||c.commercial||'').trim().toLowerCase();
+}
+function terceroNombre(c){c=c||{};return c.commercial||c.name||'(sin nombre)';}
+// Lo efectivamente pagado de una factura: si está marcada Pagada se asume pagada completa.
+function pagadoEf(inv){return inv.status==='Pagada'?inv.total:Math.min(totalAbonado(inv),inv.total);}
+function saldoEf(inv){return inv.status==='Pagada'?0:Math.max(saldoPendiente(inv),0);}
+// Desglose por centro de una factura: {centro:{sub,iva,total}}
+function desgloseCentros(inv){
+  const r={};
+  (inv.items||[]).forEach(it=>{
+    const k=centroKey(it),s=(+it.qty||0)*(+it.price||0),v=s*(+it.iva||0)/100;
+    if(!r[k])r[k]={sub:0,iva:0,total:0};
+    r[k].sub+=s;r[k].iva+=v;r[k].total+=s+v;
+  });
+  if(!Object.keys(r).length)r['Sin asignar']={sub:inv.sub||0,iva:inv.iva||0,total:inv.total||0};
+  return r;
+}
+function todosLosCentros(){
+  const s=new Set(products.map(p=>(p.centro||'').trim()).filter(Boolean));
+  invoices.forEach(inv=>(inv.items||[]).forEach(it=>{const c=(it.centro||'').trim();if(c)s.add(c);}));
+  return[...s].sort((a,b)=>a.localeCompare(b,'es'));
+}
+
+function showInfTab(t){
+  document.querySelectorAll('.inf-panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.inf-sw').forEach(b=>b.classList.remove('active'));
+  document.getElementById('inf-'+t).style.display='';
+  document.getElementById('infsw-'+t).classList.add('active');
+  if(t==='mes')renderInfMes();else renderInfTercero();
+}
+function initInformes(){
+  const m=document.getElementById('infm-mes');if(!m.value)m.value=hoyLocal().slice(0,7);
+  // Centros
+  const fc=document.getElementById('infm-centro'),cur=fc.value;
+  fc.innerHTML='<option value="">Todos los centros/áreas</option>'+todosLosCentros().map(c=>`<option value="${infEsc(c)}">${infEsc(c)}</option>`).join('')+'<option value="Sin asignar">Sin asignar</option>';
+  fc.value=cur;
+  // Facturadores
+  const fi=document.getElementById('infm-issuer'),curI=fi.value;
+  fi.innerHTML='<option value="">Todos</option>'+issuers.filter(i=>i.name||i.commercial).map(i=>`<option value="${infEsc(i.id)}">${infEsc(i.commercial||i.name)}</option>`).join('');
+  fi.value=curI;
+  // Terceros (de las facturas, que es donde viven los pagos)
+  const map={};
+  invoices.forEach(inv=>{const k=terceroKey(inv.client);if(!map[k])map[k]={k,nombre:terceroNombre(inv.client),nit:inv.client.nit||''};});
+  const ft=document.getElementById('inft-tercero'),curT=ft.value;
+  ft.innerHTML='<option value="">— Todos los terceros (resumen) —</option>'+Object.values(map).sort((a,b)=>a.nombre.localeCompare(b.nombre,'es')).map(t=>`<option value="${infEsc(t.k)}">${infEsc(t.nombre)}${t.nit?' · '+infEsc(t.nit):''}</option>`).join('');
+  ft.value=curT;
+  if(!document.getElementById('inft-desde').value&&!document.getElementById('inft-hasta').value)setInfRango('anio',true);
+  const vis=document.getElementById('inf-tercero').style.display!=='none'?'tercero':'mes';
+  showInfTab(vis);
+}
+function setInfRango(r,silent){
+  const h=hoyLocal(),[y,m]=h.split('-').map(Number);
+  let desde='',hasta=h;
+  const ini=(yy,mm)=>{while(mm<1){mm+=12;yy--;}return yy+'-'+String(mm).padStart(2,'0')+'-01';};
+  if(r==='mes')desde=ini(y,m);
+  if(r==='3m')desde=ini(y,m-2);
+  if(r==='anio')desde=y+'-01-01';
+  if(r==='12m')desde=ini(y,m-11);
+  if(r==='todo'){desde='';hasta='';}
+  document.getElementById('inft-desde').value=desde;
+  document.getElementById('inft-hasta').value=hasta;
+  if(!silent)renderInfTercero();
+}
+
+// ── Informe 1: facturas del mes ──
+function datosInfMes(){
+  const mes=document.getElementById('infm-mes').value;
+  const centro=document.getElementById('infm-centro').value;
+  const issuerId=document.getElementById('infm-issuer').value;
+  const estado=document.getElementById('infm-estado').value;
+  let base=invoices.filter(inv=>(inv.date||'').slice(0,7)===mes);
+  if(issuerId)base=base.filter(inv=>inv.issuerId===issuerId);
+  if(estado)base=base.filter(inv=>inv.status===estado);
+  // Resumen por centro (sobre el mes, sin aplicar el filtro de centro)
+  const resumen={};let totalMes=0;
+  base.forEach(inv=>{const d=desgloseCentros(inv);Object.entries(d).forEach(([k,v])=>{
+    if(!resumen[k])resumen[k]={n:0,sub:0,iva:0,total:0};
+    resumen[k].n++;resumen[k].sub+=v.sub;resumen[k].iva+=v.iva;resumen[k].total+=v.total;totalMes+=v.total;});});
+  // Filas
+  const filas=[];
+  base.forEach(inv=>{
+    const d=desgloseCentros(inv),centros=Object.keys(d);
+    if(centro&&!d[centro])return;
+    const parte=centro?d[centro]:{sub:inv.sub||0,iva:inv.iva||0,total:inv.total||0};
+    const frac=inv.total?parte.total/inv.total:1;
+    const abon=pagadoEf(inv)*frac;
+    filas.push({inv,centros,sub:parte.sub,iva:parte.iva,total:parte.total,abonado:abon,saldo:Math.max(parte.total-abon,0),parcial:centro&&centros.length>1});
+  });
+  filas.sort((a,b)=>(a.inv.date||'').localeCompare(b.inv.date||'')||String(a.inv.num).localeCompare(String(b.inv.num),'es',{numeric:true}));
+  const tot=filas.reduce((t,f)=>{t.sub+=f.sub;t.iva+=f.iva;t.total+=f.total;t.abonado+=f.abonado;t.saldo+=f.saldo;return t;},{sub:0,iva:0,total:0,abonado:0,saldo:0});
+  return{mes,centro,issuerId,estado,filas,tot,resumen,totalMes};
+}
+function renderInfMes(){
+  const D=datosInfMes(),{filas,tot,centro}=D;
+  const issuerSel=document.getElementById('infm-issuer');
+  document.getElementById('infm-print-head').innerHTML=`<h2>Facturas de ${mesLabel(D.mes,true)}</h2><div>Centro: ${infEsc(centro||'Todos')} · Facturador: ${infEsc(D.issuerId?issuerSel.options[issuerSel.selectedIndex].text:'Todos')} · Estado: ${infEsc(D.estado||'Todos')} · Generado ${fechaCorta(hoyLocal())}</div>`;
+  document.getElementById('infm-stats').innerHTML=`
+    <div class="stat-card blue"><div class="lbl">🧾 Facturas${centro?' · '+infEsc(centro):''}</div><div class="val">${filas.length}</div></div>
+    <div class="stat-card"><div class="lbl">Subtotal</div><div class="val">${fmt(tot.sub)}</div><div style="font-size:11px;color:var(--gray);margin-top:4px">IVA ${fmt(tot.iva)}</div></div>
+    <div class="stat-card blue"><div class="lbl">💰 Total facturado</div><div class="val">${fmt(tot.total)}</div></div>
+    <div class="stat-card green"><div class="lbl">✅ Recaudado</div><div class="val">${fmt(tot.abonado)}</div></div>
+    <div class="stat-card amber"><div class="lbl">⏳ Saldo pendiente</div><div class="val">${fmt(tot.saldo)}</div></div>`;
+  const nota=document.getElementById('infm-centro-note');
+  if(centro&&filas.some(f=>f.parcial)){nota.style.display='';nota.innerHTML=`ℹ️ Las facturas marcadas con <b>*</b> tienen ítems de varios centros: se muestra solo la porción de <b>${infEsc(centro)}</b>. Lo abonado se reparte en proporción al valor de cada centro.`;}
+  else nota.style.display='none';
+  const tb=document.getElementById('infm-tbody'),tf=document.getElementById('infm-tfoot'),em=document.getElementById('infm-empty');
+  if(!filas.length){tb.innerHTML='';tf.innerHTML='';em.style.display='';}
+  else{
+    em.style.display='none';
+    tb.innerHTML=filas.map(f=>{const i=f.inv,iss=i.issuer||{};
+      const cs=f.centros.map(c=>c===centro?`<b>${infEsc(c)}</b>`:infEsc(c)).join(', ');
+      const badge=i.status==='Pagada'?'badge-paid':(diasVenc(i.due)!==null&&diasVenc(i.due)<0?'badge-late':'badge-pend');
+      return`<tr><td style="white-space:nowrap"><strong>${infEsc(i.num)}</strong>${f.parcial?' *':''}</td><td style="white-space:nowrap">${fechaCorta(i.date)}</td><td>${infEsc(terceroNombre(i.client))}<div style="font-size:11px;color:var(--gray)">${infEsc(i.client.nit||'Sin NIT')} · ${infEsc(iss.commercial||iss.name||'—')}</div></td>
+      <td style="font-size:12px">${cs}</td>
+      <td class="r">${fmt(f.sub)}</td><td class="r">${fmt(f.iva)}</td><td class="r"><strong>${fmt(f.total)}</strong></td>
+      <td class="r" style="color:var(--green)">${fmt(f.abonado)}</td><td class="r" style="color:${f.saldo>0.5?'var(--amber)':'var(--gray)'}">${fmt(f.saldo)}</td>
+      <td><span class="badge ${badge}">${infEsc(i.status)}</span></td></tr>`;}).join('');
+    tf.innerHTML=`<tr class="inf-tot"><td colspan="4">TOTAL (${filas.length})</td><td class="r">${fmt(tot.sub)}</td><td class="r">${fmt(tot.iva)}</td><td class="r">${fmt(tot.total)}</td><td class="r">${fmt(tot.abonado)}</td><td class="r">${fmt(tot.saldo)}</td><td></td></tr>`;
+  }
+  const rs=Object.entries(D.resumen).sort((a,b)=>b[1].total-a[1].total);
+  document.getElementById('infm-resumen').innerHTML=rs.length?rs.map(([k,v])=>`<tr class="${k===centro?'inf-hl':''}" style="cursor:pointer" onclick="document.getElementById('infm-centro').value=${infEsc(JSON.stringify(k))};renderInfMes()">
+      <td>${infEsc(k)}</td><td class="r">${v.n}</td><td class="r">${fmt(v.sub)}</td><td class="r">${fmt(v.iva)}</td><td class="r"><strong>${fmt(v.total)}</strong></td>
+      <td class="r">${D.totalMes?(v.total/D.totalMes*100).toFixed(1):'0.0'}%</td></tr>`).join('')+
+      `<tr class="inf-tot"><td>TOTAL MES</td><td></td><td class="r">${fmt(rs.reduce((s,[,v])=>s+v.sub,0))}</td><td class="r">${fmt(rs.reduce((s,[,v])=>s+v.iva,0))}</td><td class="r">${fmt(D.totalMes)}</td><td class="r">100%</td></tr>`
+    :`<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:20px">Sin facturas en ${mesLabel(D.mes,true)}.</td></tr>`;
+}
+function exportInfMes(){
+  if(!window.XLSX){alert('No se pudo cargar la librería de Excel.');return;}
+  const D=datosInfMes(),r=Math.round;
+  const issuerSel=document.getElementById('infm-issuer');
+  const aoa=[[`Facturas de ${mesLabel(D.mes,true)}`],[`Centro: ${D.centro||'Todos'} · Facturador: ${D.issuerId?issuerSel.options[issuerSel.selectedIndex].text:'Todos'} · Estado: ${D.estado||'Todos'}`],[],
+    ['No.','Fecha','Cliente','NIT','Facturador','Centro(s)','Subtotal','IVA','Total','Abonado','Saldo','Estado']];
+  D.filas.forEach(f=>{const i=f.inv,iss=i.issuer||{};aoa.push([i.num,i.date,terceroNombre(i.client),i.client.nit||'',iss.commercial||iss.name||'',f.centros.join(', '),r(f.sub),r(f.iva),r(f.total),r(f.abonado),r(f.saldo),i.status]);});
+  aoa.push(['TOTAL','','','','','',r(D.tot.sub),r(D.tot.iva),r(D.tot.total),r(D.tot.abonado),r(D.tot.saldo),'']);
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[10,11,30,14,22,22,14,12,14,14,14,11].map(w=>({wch:w}));
+  const aoa2=[[`Resumen por centro de costo · ${mesLabel(D.mes,true)}`],[],['Centro / Área','Facturas','Subtotal','IVA','Total','% del mes']];
+  Object.entries(D.resumen).sort((a,b)=>b[1].total-a[1].total).forEach(([k,v])=>aoa2.push([k,v.n,r(v.sub),r(v.iva),r(v.total),D.totalMes?+(v.total/D.totalMes*100).toFixed(2):0]));
+  aoa2.push(['TOTAL','','','',r(D.totalMes),100]);
+  const ws2=XLSX.utils.aoa_to_sheet(aoa2);ws2['!cols']=[28,10,14,12,14,10].map(w=>({wch:w}));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Facturas');XLSX.utils.book_append_sheet(wb,ws2,'Resumen centros');
+  XLSX.writeFile(wb,`Facturas_${D.mes}${D.centro?'_'+D.centro.replace(/[^\p{L}\p{N}]+/gu,'_'):''}.xlsx`);
+}
+
+// ── Informe 2: pagos por tercero ──
+function datosInfTercero(){
+  const key=document.getElementById('inft-tercero').value;
+  const desde=document.getElementById('inft-desde').value,hasta=document.getElementById('inft-hasta').value;
+  const enRango=f=>(!desde||f>=desde)&&(!hasta||f<=hasta);
+  const pagos=[];
+  invoices.forEach(inv=>(inv.abonos||[]).forEach((ab,idx)=>{
+    if(!ab.fecha||!enRango(ab.fecha))return;
+    if(key&&terceroKey(inv.client)!==key)return;
+    pagos.push({inv,ab,idx,k:terceroKey(inv.client)});
+  }));
+  pagos.sort((a,b)=>a.ab.fecha.localeCompare(b.ab.fecha)||(a.ab.reciboNum||0)-(b.ab.reciboNum||0));
+  const invT=key?invoices.filter(inv=>terceroKey(inv.client)===key):invoices;
+  // Facturas marcadas Pagadas sin recibo completo (no tienen fecha de pago)
+  const sinRecibo=invT.filter(inv=>inv.status==='Pagada'&&totalAbonado(inv)<inv.total-0.5&&(!inv.date||enRango(inv.date)));
+  return{key,desde,hasta,pagos,invT,sinRecibo,enRango};
+}
+function rangoTxt(d,h){return d&&h?`${fechaCorta(d)} a ${fechaCorta(h)}`:d?`desde ${fechaCorta(d)}`:h?`hasta ${fechaCorta(h)}`:'Todo el historial';}
+function renderInfTercero(){
+  const D=datosInfTercero();
+  const sel=document.getElementById('inft-tercero'),nombreSel=D.key?sel.options[sel.selectedIndex].text:'Todos los terceros';
+  document.getElementById('inft-print-head').innerHTML=`<h2>Pagos por tercero · ${infEsc(nombreSel)}</h2><div>Periodo: ${rangoTxt(D.desde,D.hasta)} · Generado ${fechaCorta(hoyLocal())}</div>`;
+  const totalPag=D.pagos.reduce((s,p)=>s+p.ab.monto,0);
+  document.getElementById('inft-todos').style.display=D.key?'none':'';
+  document.getElementById('inft-uno').style.display=D.key?'':'none';
+  if(!D.key){
+    const g={};
+    D.pagos.forEach(p=>{if(!g[p.k])g[p.k]={k:p.k,nombre:terceroNombre(p.inv.client),nit:p.inv.client.nit||'',n:0,total:0,ultimo:''};
+      const t=g[p.k];t.n++;t.total+=p.ab.monto;if(p.ab.fecha>t.ultimo)t.ultimo=p.ab.fecha;});
+    const saldoPor={};invoices.forEach(inv=>{const k=terceroKey(inv.client);saldoPor[k]=(saldoPor[k]||0)+saldoEf(inv);});
+    const rows=Object.values(g).sort((a,b)=>b.total-a.total);
+    document.getElementById('inft-stats').innerHTML=`
+      <div class="stat-card green"><div class="lbl">💵 Total recaudado</div><div class="val">${fmt(totalPag)}</div></div>
+      <div class="stat-card blue"><div class="lbl">🧾 Pagos recibidos</div><div class="val">${D.pagos.length}</div></div>
+      <div class="stat-card"><div class="lbl">👥 Terceros que pagaron</div><div class="val">${rows.length}</div></div>
+      <div class="stat-card amber"><div class="lbl">Promedio por pago</div><div class="val">${fmt(D.pagos.length?totalPag/D.pagos.length:0)}</div></div>`;
+    const tb=document.getElementById('inft-todos-tbody'),em=document.getElementById('inft-todos-empty'),tf=document.getElementById('inft-todos-tfoot');
+    if(!rows.length){tb.innerHTML='';tf.innerHTML='';em.style.display='';return;}
+    em.style.display='none';
+    tb.innerHTML=rows.map(t=>`<tr><td><strong>${infEsc(t.nombre)}</strong></td><td style="font-size:12px">${infEsc(t.nit||'—')}</td><td class="r">${t.n}</td>
+      <td class="r" style="color:var(--green);font-weight:600">${fmt(t.total)}</td><td>${fechaCorta(t.ultimo)}</td>
+      <td class="r" style="color:${saldoPor[t.k]>0.5?'var(--amber)':'var(--gray)'}">${fmt(saldoPor[t.k]||0)}</td>
+      <td class="no-print"><button class="btn btn-sm" onclick="document.getElementById('inft-tercero').value=${infEsc(JSON.stringify(t.k))};renderInfTercero()">Ver detalle →</button></td></tr>`).join('');
+    tf.innerHTML=`<tr class="inf-tot"><td colspan="2">TOTAL (${rows.length} terceros)</td><td class="r">${D.pagos.length}</td><td class="r">${fmt(totalPag)}</td><td></td><td class="r">${fmt(rows.reduce((s,t)=>s+(saldoPor[t.k]||0),0))}</td><td class="no-print"></td></tr>`;
+    return;
+  }
+  // Un tercero
+  const facturadoRango=D.invT.filter(inv=>inv.date&&D.enRango(inv.date)).reduce((s,i)=>s+(i.total||0),0);
+  const pend=D.invT.filter(inv=>saldoEf(inv)>0.5).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const saldoHoy=pend.reduce((s,i)=>s+saldoEf(i),0);
+  const dias=D.pagos.map(p=>diasEntre(p.inv.date,p.ab.fecha)).filter(x=>x!==null);
+  const diasProm=dias.length?Math.round(dias.reduce((a,b)=>a+b,0)/dias.length):null;
+  document.getElementById('inft-stats').innerHTML=`
+    <div class="stat-card green"><div class="lbl">💵 Total pagado (periodo)</div><div class="val">${fmt(totalPag)}</div><div style="font-size:11px;color:var(--gray);margin-top:4px">${D.pagos.length} pago(s)</div></div>
+    <div class="stat-card blue"><div class="lbl">🧾 Facturado (periodo)</div><div class="val">${fmt(facturadoRango)}</div></div>
+    <div class="stat-card amber"><div class="lbl">⏳ Saldo pendiente hoy</div><div class="val">${fmt(saldoHoy)}</div><div style="font-size:11px;color:var(--gray);margin-top:4px">${pend.length} factura(s)</div></div>
+    <div class="stat-card"><div class="lbl">⏱️ Días promedio de pago</div><div class="val">${diasProm===null?'—':diasProm+' días'}</div><div style="font-size:11px;color:var(--gray);margin-top:4px">desde fecha de factura</div></div>`;
+  // Gráfico mensual
+  document.getElementById('inft-chart').innerHTML=chartPagosMes(serieMensual(D));
+  // Tabla de pagos
+  const tb=document.getElementById('inft-tbody'),tf=document.getElementById('inft-tfoot'),em=document.getElementById('inft-empty');
+  if(!D.pagos.length){tb.innerHTML='';tf.innerHTML='';em.style.display='';}
+  else{
+    em.style.display='none';let acum=0;
+    tb.innerHTML=D.pagos.map(p=>{acum+=p.ab.monto;const d=diasEntre(p.inv.date,p.ab.fecha);
+      return`<tr><td>${fechaCorta(p.ab.fecha)}</td><td>No. ${infEsc(p.ab.reciboNum||'—')}</td><td><strong>${infEsc(p.inv.num)}</strong></td><td>${fechaCorta(p.inv.date)}</td>
+      <td class="r">${d===null?'—':d}</td><td style="font-size:12px">${infEsc(p.ab.method||'—')}</td><td style="font-size:12px">${infEsc(p.ab.cuentaNombre||'—')}</td>
+      <td class="r" style="color:var(--green);font-weight:600">${fmt(p.ab.monto)}</td><td class="r">${fmt(acum)}</td></tr>`;}).join('');
+    tf.innerHTML=`<tr class="inf-tot"><td colspan="7">TOTAL PAGADO (${D.pagos.length})</td><td class="r">${fmt(totalPag)}</td><td></td></tr>`;
+  }
+  const sr=document.getElementById('inft-sinrecibo');
+  if(D.sinRecibo.length){sr.style.display='';sr.innerHTML=`⚠️ ${D.sinRecibo.length} factura(s) de este tercero están marcadas como <b>Pagadas</b> sin recibo de caja completo (${D.sinRecibo.map(i=>infEsc(i.num)).join(', ')}), por ${fmt(D.sinRecibo.reduce((s,i)=>s+i.total-totalAbonado(i),0))}. No aparecen en la tabla de pagos porque no tienen fecha de pago registrada.`;}
+  else sr.style.display='none';
+  document.getElementById('inft-pend').innerHTML=pend.length?pend.map(i=>{const dv=diasVenc(i.due);
+    return`<tr><td><strong>${infEsc(i.num)}</strong></td><td>${fechaCorta(i.date)}</td><td>${fechaCorta(i.due)}${dv!==null&&dv<0?` <span class="badge badge-late">${-dv} días vencida</span>`:''}</td>
+    <td class="r">${fmt(i.total)}</td><td class="r">${fmt(totalAbonado(i))}</td><td class="r" style="color:var(--amber);font-weight:600">${fmt(saldoEf(i))}</td></tr>`;}).join('')
+    :`<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:16px">Sin saldos pendientes ✅</td></tr>`;
+}
+function serieMensual(D){
+  const porMes={};D.pagos.forEach(p=>{const m=p.ab.fecha.slice(0,7);porMes[m]=(porMes[m]||0)+p.ab.monto;});
+  let ini=D.desde?D.desde.slice(0,7):null,fin=D.hasta?D.hasta.slice(0,7):null;
+  const ms=Object.keys(porMes).sort();
+  if(!ini)ini=ms[0];if(!fin)fin=ms[ms.length-1]||hoyLocal().slice(0,7);
+  if(!ini)return[];
+  const out=[];let[y,m]=ini.split('-').map(Number);const[fy,fm]=fin.split('-').map(Number);
+  while((y<fy||(y===fy&&m<=fm))&&out.length<60){const k=y+'-'+String(m).padStart(2,'0');out.push({mes:k,val:porMes[k]||0});m++;if(m>12){m=1;y++;}}
+  return out;
+}
+function chartPagosMes(serie){
+  if(!serie.length||!serie.some(s=>s.val))return'<div style="color:var(--gray);font-size:13px;padding:10px 0">Sin pagos en el periodo.</div>';
+  const max=Math.max(...serie.map(s=>s.val));
+  const k=v=>v>=1e6?(v/1e6).toFixed(1).replace('.0','')+'M':v>=1e3?Math.round(v/1e3)+'k':Math.round(v);
+  return`<div class="inf-chart">${serie.map(s=>`<div class="inf-bar-col" title="${mesLabel(s.mes,true)}: ${fmt(s.val)}">
+    <div class="inf-bar-val">${s.val?k(s.val):''}</div>
+    <div class="inf-bar-track"><div class="inf-bar" style="height:${s.val?Math.max(s.val/max*100,2):0}%"></div></div>
+    <div class="inf-bar-lbl">${mesLabel(s.mes)}</div></div>`).join('')}</div>`;
+}
+function exportInfTercero(){
+  if(!window.XLSX){alert('No se pudo cargar la librería de Excel.');return;}
+  const D=datosInfTercero(),sel=document.getElementById('inft-tercero'),r=Math.round;
+  const nombre=D.key?sel.options[sel.selectedIndex].text:'Todos los terceros';
+  const wb=XLSX.utils.book_new();
+  const aoa=[[`Pagos por tercero · ${nombre}`],[`Periodo: ${rangoTxt(D.desde,D.hasta)}`],[],
+    ['Fecha pago','Recibo','Tercero','NIT','Factura','Fecha factura','Días','Método','Cuenta','Valor','Acumulado']];
+  let acum=0;
+  D.pagos.forEach(p=>{acum+=p.ab.monto;aoa.push([p.ab.fecha,p.ab.reciboNum||'',terceroNombre(p.inv.client),p.inv.client.nit||'',p.inv.num,p.inv.date,diasEntre(p.inv.date,p.ab.fecha),p.ab.method||'',p.ab.cuentaNombre||'',r(p.ab.monto),r(acum)]);});
+  aoa.push(['TOTAL','','','','','','','','',r(acum),'']);
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[11,8,30,14,10,12,6,14,18,14,14].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb,ws,'Pagos');
+  if(D.key){
+    const aoa2=[['Mes','Total pagado']];serieMensual(D).forEach(s=>aoa2.push([mesLabel(s.mes,true),r(s.val)]));
+    const ws2=XLSX.utils.aoa_to_sheet(aoa2);ws2['!cols']=[{wch:20},{wch:14}];XLSX.utils.book_append_sheet(wb,ws2,'Por mes');
+    const aoa3=[['Factura','Fecha','Vence','Total','Abonado','Saldo']];
+    D.invT.filter(i=>saldoEf(i)>0.5).forEach(i=>aoa3.push([i.num,i.date,i.due||'',r(i.total),r(totalAbonado(i)),r(saldoEf(i))]));
+    const ws3=XLSX.utils.aoa_to_sheet(aoa3);ws3['!cols']=[10,11,11,14,14,14].map(w=>({wch:w}));XLSX.utils.book_append_sheet(wb,ws3,'Saldos pendientes');
+  }else{
+    const g={};D.pagos.forEach(p=>{if(!g[p.k])g[p.k]={nombre:terceroNombre(p.inv.client),nit:p.inv.client.nit||'',n:0,total:0,ultimo:''};const t=g[p.k];t.n++;t.total+=p.ab.monto;if(p.ab.fecha>t.ultimo)t.ultimo=p.ab.fecha;});
+    const aoa2=[['Tercero','NIT','Pagos','Total pagado','Último pago']];
+    Object.values(g).sort((a,b)=>b.total-a.total).forEach(t=>aoa2.push([t.nombre,t.nit,t.n,r(t.total),t.ultimo]));
+    const ws2=XLSX.utils.aoa_to_sheet(aoa2);ws2['!cols']=[30,14,8,14,12].map(w=>({wch:w}));XLSX.utils.book_append_sheet(wb,ws2,'Resumen terceros');
+  }
+  XLSX.writeFile(wb,`Pagos_${(D.key?nombre.split(' · ')[0]:'Terceros').replace(/[^\p{L}\p{N}]+/gu,'_')}_${D.desde||'inicio'}_${D.hasta||'hoy'}.xlsx`);
+}
 </script>
 </body>
 </html>
